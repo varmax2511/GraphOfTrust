@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
@@ -16,8 +18,6 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 import org.neo4j.graphdb.schema.Schema;
 import org.neo4j.io.fs.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import edu.buffalo.cse.wot.neo4j.config.AppConfiguration;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
@@ -35,15 +35,22 @@ public class Neo4jStore implements DataStore {
   private final AppConfiguration appConfiguration;
   private GraphDatabaseService graphDb;
   private static File storeDir;
-  private static Logger logger = LoggerFactory.getLogger(Neo4jStore.class);
+  private static Logger logger = LogManager.getLogger(Neo4jStore.class);
   /**
    *
    * @param configuration
    *          !null
    */
-  public Neo4jStore(AppConfiguration configuration) {
-    Validate.notNull(configuration);
-    this.appConfiguration = configuration;
+  private Neo4jStore() {
+    this.appConfiguration = AppConfiguration.getInstance();
+  }
+
+  private static class LazyHolder {
+    private static final Neo4jStore INSTANCE = new Neo4jStore();
+  }
+
+  public static Neo4jStore getInstance() {
+    return LazyHolder.INSTANCE;
   }
 
   /**
@@ -62,6 +69,7 @@ public class Neo4jStore implements DataStore {
 
     // launch database service
 
+    @SuppressWarnings("deprecation")
     GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings
         .boltConnector("0");
     graphDb = new GraphDatabaseFactory().newEmbeddedDatabaseBuilder(storeDir)
@@ -70,8 +78,7 @@ public class Neo4jStore implements DataStore {
         .setConfig(bolt.encryption_level, "DISABLED") // dbms.connector.0.tls_level
         .setConfig("dbms.connector.http.address", "0.0.0.0:7474")
         .setConfig("dbms.connector.http.enabled", "true")
-        .setConfig("dbms.connector.http.type", "HTTP")
-        .newGraphDatabase();
+        .setConfig("dbms.connector.http.type", "HTTP").newGraphDatabase();
 
     /*
      * GraphDatabaseSettings.BoltConnector bolt =
@@ -152,6 +159,7 @@ public class Neo4jStore implements DataStore {
             RelationshipType.withName(AppConstants.RELATIONSHIP_TYPE_EDGE));
         relation.setProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT,
             edge.getWeight());
+
       } // for
 
       tx.success();
@@ -207,5 +215,17 @@ public class Neo4jStore implements DataStore {
         graphDb.shutdown();
       }
     });
+  }
+
+  @Override
+  public Node getNode(String labelName, String uid) {
+    Validate.notBlank(labelName);
+    Validate.notBlank(uid);
+
+    return graphDb.findNode(Label.label(labelName), AppConstants.NODE_UID, uid);
+  }
+
+  public GraphDatabaseService getGraphDB() {
+    return graphDb;
   }
 }
