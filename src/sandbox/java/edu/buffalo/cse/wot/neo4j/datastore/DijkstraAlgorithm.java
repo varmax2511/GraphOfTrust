@@ -1,4 +1,4 @@
-package edu.buffalo.cse.wot.neo4j;
+package edu.buffalo.cse.wot.neo4j.datastore;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,19 +8,16 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Stack;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.neo4j.graphalgo.GraphAlgoFactory;
-import org.neo4j.graphalgo.PathFinder;
-import org.neo4j.graphalgo.WeightedPath;
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.PathExpanders;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
+import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils;
 
@@ -36,15 +33,6 @@ public class DijkstraAlgorithm {
 
   private static Logger logger = LogManager.getLogger(DijkstraAlgorithm.class);
 
-  public static void findShortedPathFrmSrc(Node src) {
-
-    final PathFinder<WeightedPath> finder = GraphAlgoFactory.dijkstra(
-        PathExpanders.forTypeAndDirection(DynamicRelationshipType
-            .withName(AppConstants.RELATIONSHIP_TYPE_EDGE), Direction.BOTH),
-        AppConstants.RELATIONSHIP_EDGE_WEIGHT);
-
-  }
-
   /**
    * 
    * @param labelName
@@ -52,9 +40,17 @@ public class DijkstraAlgorithm {
    * @param neo4jStore
    * @return
    */
-  public static Map<String, Float> findShortedPathFrmSrc2(String labelName,
+  public static Map<String, Float> findShortedPathFrmSrc(String labelName,
       String uid, Neo4jStore neo4jStore) {
 
+    // null check
+    if (StringUtils.isBlank(labelName) || StringUtils.isBlank(uid)) {
+      return new HashMap<>();
+    }
+
+    /*
+     * Processing
+     */
     final Map<String, Float> dist = new HashMap<>();
     try (Transaction tx = neo4jStore.getGraphDB().beginTx()) {
       final Node srcNode = neo4jStore.getNode(labelName, uid);
@@ -97,7 +93,8 @@ public class DijkstraAlgorithm {
           final float cost = dist.get(minUid)
               + (float) relationship
                   .getProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT)
-              + (float) TrustDecayUtils.logarithmicTrustDecay(nodeNhop.getValue() + 1);
+              + (float) TrustDecayUtils
+                  .logarithmicTrustDecay(nodeNhop.getValue() + 1);
 
           // if cost is less than already computed cost
           if (!dist.containsKey(endUid) || dist.get(endUid) > cost) {
@@ -114,6 +111,13 @@ public class DijkstraAlgorithm {
     return dist;
   }
 
+  /**
+   * Find the minimum distance node {@link AppConstants#NODE_UID}.
+   * 
+   * @param dist
+   * @param unvisited
+   * @return
+   */
   private static String minDistance(Map<String, Float> dist,
       Map<String, Pair<Node, Integer>> unvisited) {
     float min = Float.MAX_VALUE;
@@ -156,6 +160,30 @@ public class DijkstraAlgorithm {
     } // while
 
     stack.push(node.getProperty(AppConstants.NODE_UID).toString());
+  }
+
+  /**
+   * 
+   * @param uid2ShortestPaths
+   * @return
+   */
+  public static long getShortestPathNodeUid(final Map<String, Float> uid2ShortestPaths) {
+    // validate
+    if(uid2ShortestPaths == null || MapUtils.isEmpty(uid2ShortestPaths)) {
+      return -1;
+    }
+    
+    float min = Float.MAX_VALUE;
+    long minUid = -1;
+    for (Map.Entry<String, Float> entry : uid2ShortestPaths.entrySet()) {
+      float val = entry.getValue();
+  
+      if (val < min) {
+        min = val;
+        minUid = Long.parseLong(entry.getKey());
+      }
+    } // for
+    return minUid;
   }
 
 }

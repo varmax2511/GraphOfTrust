@@ -12,7 +12,6 @@ import edu.buffalo.cse.wot.neo4j.config.AppConfiguration;
  */
 public class CacheManager {
 
-  private List<Long> uids = new LinkedList<>();
   private final AppConfiguration appConfiguration;
   
   /**
@@ -20,7 +19,6 @@ public class CacheManager {
    */
   private CacheManager() {
     this.appConfiguration = AppConfiguration.getInstance();
-    loadUids(Long.parseLong(appConfiguration.getProperty("config.user.size")));
   }
 
   /**
@@ -40,13 +38,4 @@ public class CacheManager {
     return LazyHolder.INSTANCE;
   }
   
-  private void loadUids(long size) {
-    for(long i = 1; i <= size; i++) {
-      uids.add(i);
-    }
-  }
-  
-  public List<Long> getUids(){
-    return this.uids;
-  }
 }

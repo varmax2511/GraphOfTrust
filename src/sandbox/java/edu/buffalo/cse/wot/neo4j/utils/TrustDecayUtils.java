@@ -13,5 +13,9 @@ public class TrustDecayUtils {
     }
     return Math.log(hops);
   }
+  
+  public static double   moleTrust() {
+    return 0;
+  }
 
 }

@@ -1,4 +1,4 @@
-package edu.buffalo.cse.wot.neo4j;
+package edu.buffalo.cse.wot.neo4j.datastore;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +19,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 import org.neo4j.graphdb.schema.Schema;
 import org.neo4j.io.fs.FileUtils;
 
+import edu.buffalo.cse.wot.neo4j.DataStore;
 import edu.buffalo.cse.wot.neo4j.config.AppConfiguration;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.model.Edge;
@@ -30,7 +31,7 @@ import edu.buffalo.cse.wot.neo4j.utils.GraphNodeUtils;
  * @author varunjai
  *
  */
-public class Neo4jStore implements DataStore {
+class Neo4jStore implements DataStore {
 
   private final AppConfiguration appConfiguration;
   private GraphDatabaseService graphDb;
@@ -128,6 +129,7 @@ public class Neo4jStore implements DataStore {
   public void startServer() {
     try {
       createDb();
+      logger.info("Neo4j database instance started");
     } catch (Throwable t) {
       logger.error(t.getMessage());
       throw new IllegalArgumentException(
@@ -207,6 +209,7 @@ public class Neo4jStore implements DataStore {
       @Override
       public void run() {
         try {
+          logger.info("Cleaning Neo4j instance files");
           FileUtils.deleteRecursively(storeDir);
         } catch (Throwable t) {
           // TODO Auto-generated catch block
