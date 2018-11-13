@@ -4,27 +4,41 @@ import java.io.FileInputStream;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+/**
+ * 
+ * @author varunjai
+ *
+ */
 public class AppConfiguration {
 
   private final Properties properties;
-  private static Logger logger = LoggerFactory.getLogger(AppConfiguration.class);
+  private static Logger logger = LogManager.getLogger(AppConfiguration.class);
 
   /**
    * 
    */
-  public AppConfiguration() {
+  private AppConfiguration() {
     properties = new Properties();
     try {
-      properties.load(new FileInputStream("C:\\Users\\rathj\\git\\GraphOfTrust\\src\\sandbox\\java\\config.properties"));
+      properties.load(new FileInputStream(
+          "C:\\Users\\rathj\\git\\GraphOfTrust\\src\\sandbox\\java\\config.properties"));
     } catch (Throwable t) {
       logger.error(t.getMessage());
       throw new IllegalArgumentException(
           "Invalid properties file: " + t.getMessage());
     }
   }
+
+  private static class LazyHolder {
+    private static final AppConfiguration INSTANCE = new AppConfiguration();
+  }
+
+  public static AppConfiguration getInstance() {
+    return LazyHolder.INSTANCE;
+  }
+
   /**
    * 
    * @param propertyName
