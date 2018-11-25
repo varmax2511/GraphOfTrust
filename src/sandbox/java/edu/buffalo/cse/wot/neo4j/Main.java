@@ -1,17 +1,10 @@
 package edu.buffalo.cse.wot.neo4j;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.datastore.DataStoreManager;
-import edu.buffalo.cse.wot.neo4j.model.Edge;
-import edu.buffalo.cse.wot.neo4j.model.UserNode;
-import edu.buffalo.cse.wot.neo4j.utils.CacheManager;
-import edu.buffalo.cse.wot.neo4j.utils.QaRandomDistributor;
+import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
 
 /**
  * 
@@ -27,7 +20,9 @@ public class Main {
     JettyServer server = new JettyServer();
     server.start();
     
-    UserNode node1 = new UserNode();
+    DataUtils.loadAdvogatoGraph(DataStoreManager.getInstance());
+    
+    /*UserNode node1 = new UserNode();
     node1.setProperty("uid", "1");
     node1.setProperty("name", "A");
 
@@ -82,7 +77,7 @@ public class Main {
 
     logger.info("Trust response: {}",
         distribution.getKey().indexOf(minUid) == -1 ? "YES" : "NO");
-    
-    server.stop();
+*/    
+   // server.stop();
   }
 }

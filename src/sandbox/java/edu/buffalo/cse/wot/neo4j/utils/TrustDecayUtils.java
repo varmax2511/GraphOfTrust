@@ -1,5 +1,7 @@
 package edu.buffalo.cse.wot.neo4j.utils;
 
+import java.util.List;
+
 public class TrustDecayUtils {
 
   /**
@@ -14,8 +16,20 @@ public class TrustDecayUtils {
     return Math.log(hops);
   }
   
-  public static double   moleTrust() {
-    return 0;
+  /**
+   * 
+   * @param arr
+   * @return
+   */
+  public static double   moleTrust(List<Double> arr) {
+    double sum = 0;
+    double prod = 0;
+    
+    for(int i = 0; i < arr.size(); i++) {
+       sum += arr.get(i);
+       prod *= arr.get(i);
+    }
+    return sum / prod;
   }
 
 }

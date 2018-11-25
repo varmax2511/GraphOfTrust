@@ -51,4 +51,11 @@ public class JettyServer {
     DataStoreManager.getInstance().stop();
     server.stop();
   }
+  
+  /**
+   * Clean the 
+   */
+  public void reset() {
+    DataStoreManager.getInstance().reset();
+  }
 }

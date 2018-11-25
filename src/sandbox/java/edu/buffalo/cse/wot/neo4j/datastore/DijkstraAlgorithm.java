@@ -3,6 +3,7 @@ package edu.buffalo.cse.wot.neo4j.datastore;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -163,27 +164,89 @@ public class DijkstraAlgorithm {
   }
 
   /**
+   * Get the shortest path node uid which participated in the answering process,
+   * responding in yay or nay.
    * 
    * @param uid2ShortestPaths
+   * @param yayNnay
    * @return
    */
-  public static long getShortestPathNodeUid(final Map<String, Float> uid2ShortestPaths) {
+  public static long getShortestPathNodeUid(
+      final Map<String, Float> uid2ShortestPaths,
+      final Pair<Set<Long>, Set<Long>> yayNnay) {
     // validate
-    if(uid2ShortestPaths == null || MapUtils.isEmpty(uid2ShortestPaths)) {
+    if (uid2ShortestPaths == null || MapUtils.isEmpty(uid2ShortestPaths)) {
       return -1;
     }
-    
+
     float min = Float.MAX_VALUE;
     long minUid = -1;
     for (Map.Entry<String, Float> entry : uid2ShortestPaths.entrySet()) {
       float val = entry.getValue();
-  
-      if (val < min) {
-        min = val;
-        minUid = Long.parseLong(entry.getKey());
+
+      if (val >= min) {
+        continue;
       }
+
+      long uid = Long.parseLong(entry.getKey());
+      // check if the node participated in answering the question
+      // pair key represents nodes answering yes and value represents nodes
+      // answering no
+      if (!(yayNnay.getKey().contains(uid)
+          || yayNnay.getValue().contains(uid))) {
+        continue;
+      }
+
+      min = val;
+      minUid = uid;
+
     } // for
     return minUid;
+  }
+
+  /**
+   * Get the shortest strongest path from the source which participated in the
+   * Q&A
+   * 
+   * @param uid2ShortestPaths
+   *           !empty
+   * @param yayNnay
+   *           !empty
+   * @return
+   */
+  public static boolean getShortestStrongestResponse(
+      final Map<String, Float> uid2ShortestPaths,
+      final Pair<Set<Long>, Set<Long>> yayNnay) {
+    // validate
+    if (uid2ShortestPaths == null || MapUtils.isEmpty(uid2ShortestPaths)) {
+      throw new RuntimeException("No shortest path found");
+    }
+
+    float min = Float.MAX_VALUE;
+    long minUid = -1;
+    boolean minResponse = false;
+    for (Map.Entry<String, Float> entry : uid2ShortestPaths.entrySet()) {
+      float val = entry.getValue();
+
+      if (val >= min) {
+        continue;
+      }
+
+      long uid = Long.parseLong(entry.getKey());
+      // check if the node participated in answering the question
+      // pair key represents nodes answering yes and value represents nodes
+      // answering no
+      if (!(yayNnay.getKey().contains(uid)
+          || yayNnay.getValue().contains(uid))) {
+        continue;
+      }
+
+      min = val;
+      minUid = uid;
+      minResponse = yayNnay.getKey().contains(minUid) ? true : false;
+
+    } // for
+    return minResponse;
   }
 
 }
