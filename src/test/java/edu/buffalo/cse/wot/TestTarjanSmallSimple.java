@@ -17,6 +17,7 @@ import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.datastore.DataStoreManager;
 import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
 import edu.buffalo.cse.wot.neo4j.utils.QaRandomDistributor;
+import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 
 public class TestTarjanSmallSimple {
 
@@ -43,9 +44,9 @@ public class TestTarjanSmallSimple {
 
     assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
-        distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
-  
+
   @org.junit.Test
   public void testFixedTarjan2() {
 
@@ -55,7 +56,7 @@ public class TestTarjanSmallSimple {
 
     assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
-        distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
 
   @org.junit.Test
@@ -67,9 +68,9 @@ public class TestTarjanSmallSimple {
 
     assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
-        distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
-  
+
   @org.junit.Test
   public void testFixedTarjan4() {
 
@@ -79,10 +80,9 @@ public class TestTarjanSmallSimple {
 
     assertFalse(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
-        distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
 
-  
   @AfterClass
   public static void testDestroy() throws Exception {
     server.stop();

@@ -19,6 +19,7 @@ import edu.buffalo.cse.wot.neo4j.datastore.DataStoreManager;
 import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
 import edu.buffalo.cse.wot.neo4j.utils.QaRandomDistributor;
 import edu.buffalo.cse.wot.neo4j.utils.ScoreUtils;
+import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 /**
  *
  * @author varunjai
@@ -53,7 +54,8 @@ public class TestDijkstraSmallSimple {
         .getUnshuffledSplit(uids, 0.75f, uids.size(), id);
 
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+        AppConstants.LABEL_USER, String.valueOf(id),
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
 
   @org.junit.Test
@@ -65,7 +67,8 @@ public class TestDijkstraSmallSimple {
 
     // find the shortest path
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+        AppConstants.LABEL_USER, String.valueOf(id),
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
 
   /**
@@ -79,7 +82,8 @@ public class TestDijkstraSmallSimple {
         .getUnshuffledSplit(uids, 0.25f, uids.size(), id);
 
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+        AppConstants.LABEL_USER, String.valueOf(id),
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
 
   /**
@@ -93,7 +97,8 @@ public class TestDijkstraSmallSimple {
         .getUnshuffledSplit(uids, 0.1f, uids.size(), id);
 
     assertFalse(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+        AppConstants.LABEL_USER, String.valueOf(id),
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
 
   @org.junit.Test
@@ -109,15 +114,15 @@ public class TestDijkstraSmallSimple {
           .getUnshuffledSplit(uids, 0.5f, uids.size(), id);
 
       expected.add(DataStoreManager.getInstance().getShortestStrongestResponse(
-          AppConstants.LABEL_USER, String.valueOf(id), distribution));
+          AppConstants.LABEL_USER, String.valueOf(id),
+          TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
       ScoreUtils.processFeedback(AppConstants.LABEL_USER, actual.get(i),
           expected.get(i), actual.get(i) == expected.get(i), distribution);
-    }// for
+    } // for
 
     System.out.println("feedback" + ScoreUtils.getRMSE(expected, actual));
   }
 
-  
   @org.junit.Test
   public void testFixedDijkstraWithFeedback3() {
 
@@ -131,10 +136,11 @@ public class TestDijkstraSmallSimple {
           .getUnshuffledSplit(uids, 0.25f, uids.size(), id);
 
       expected.add(DataStoreManager.getInstance().getShortestStrongestResponse(
-          AppConstants.LABEL_USER, String.valueOf(id), distribution));
+          AppConstants.LABEL_USER, String.valueOf(id),
+          TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
       ScoreUtils.processFeedback(AppConstants.LABEL_USER, actual.get(i),
           expected.get(i), actual.get(i) == expected.get(i), distribution);
-    }// for
+    } // for
 
     System.out.println("feedback" + ScoreUtils.getRMSE(expected, actual));
   }
@@ -155,7 +161,8 @@ public class TestDijkstraSmallSimple {
           .getUnshuffledSplit(uids, 0.1f, uids.size(), id);
 
       expected.add(DataStoreManager.getInstance().getShortestStrongestResponse(
-          AppConstants.LABEL_USER, String.valueOf(id), distribution));
+          AppConstants.LABEL_USER, String.valueOf(id),
+          TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
       ScoreUtils.processFeedback(AppConstants.LABEL_USER, actual.get(i),
           expected.get(i), actual.get(i) == expected.get(i), distribution);
     }
@@ -176,7 +183,8 @@ public class TestDijkstraSmallSimple {
           .getShuffled(uids, 0.75f, id);
 
       expected.add(DataStoreManager.getInstance().getShortestStrongestResponse(
-          AppConstants.LABEL_USER, String.valueOf(id), distribution));
+          AppConstants.LABEL_USER, String.valueOf(id),
+          TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
     } // for
 
     System.out.println(ScoreUtils.getRMSE(expected, actual));
@@ -195,7 +203,8 @@ public class TestDijkstraSmallSimple {
           .getShuffled(uids, 0.5f, id);
 
       expected.add(DataStoreManager.getInstance().getShortestStrongestResponse(
-          AppConstants.LABEL_USER, String.valueOf(id), distribution));
+          AppConstants.LABEL_USER, String.valueOf(id),
+          TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
     } // for
 
     System.out.println(ScoreUtils.getRMSE(expected, actual));
@@ -214,7 +223,8 @@ public class TestDijkstraSmallSimple {
           .getShuffled(uids, 0.25f, id);
 
       expected.add(DataStoreManager.getInstance().getShortestStrongestResponse(
-          AppConstants.LABEL_USER, String.valueOf(id), distribution));
+          AppConstants.LABEL_USER, String.valueOf(id),
+          TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
     } // for
 
     System.out.println(ScoreUtils.getRMSE(expected, actual));
@@ -232,7 +242,8 @@ public class TestDijkstraSmallSimple {
           .getShuffled(uids, 0.1f, id);
 
       expected.add(DataStoreManager.getInstance().getShortestStrongestResponse(
-          AppConstants.LABEL_USER, String.valueOf(id), distribution));
+          AppConstants.LABEL_USER, String.valueOf(id),
+          TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
     } // for
 
     System.out.println(ScoreUtils.getRMSE(expected, actual));

@@ -16,6 +16,7 @@ import edu.buffalo.cse.wot.neo4j.DataStore;
 import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.model.UserNode;
+import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 
 /**
  * 
@@ -72,8 +73,9 @@ public class DataStoreManager {
    *          !empty
    * @return
    */
-  public Map<String, Float> findShortedPathFrmSrc(String label, String id) {
-    return DijkstraAlgorithm.findShortedPathFrmSrc(label, id,
+  public Map<String, Float> findShortedPathFrmSrc(String label, String id,
+      TRUST_DECAY_TYPE trustDecayType) {
+    return DijkstraAlgorithm.findShortedPathFrmSrc(label, id, trustDecayType,
         Neo4jStore.getInstance());
   }
 
@@ -85,9 +87,11 @@ public class DataStoreManager {
    * @return
    */
   public long getShortestPathUidFromSrc(String label, String id,
+      TRUST_DECAY_TYPE trustDecayType,
       final Pair<Set<Long>, Set<Long>> yayNnay) {
-    return DijkstraAlgorithm.getShortestPathNodeUid(DijkstraAlgorithm
-        .findShortedPathFrmSrc(label, id, Neo4jStore.getInstance()), yayNnay);
+    return DijkstraAlgorithm
+        .getShortestPathNodeUid(DijkstraAlgorithm.findShortedPathFrmSrc(label,
+            id, trustDecayType, Neo4jStore.getInstance()), yayNnay);
   }
 
   /**
@@ -98,9 +102,12 @@ public class DataStoreManager {
    * @return
    */
   public boolean getShortestStrongestResponse(String label, String id,
+      TRUST_DECAY_TYPE trustDecayType,
       final Pair<Set<Long>, Set<Long>> yayNnay) {
-    return DijkstraAlgorithm.getShortestStrongestResponse(DijkstraAlgorithm
-        .findShortedPathFrmSrc(label, id, Neo4jStore.getInstance()), yayNnay);
+    return DijkstraAlgorithm.getShortestStrongestResponse(
+        DijkstraAlgorithm.findShortedPathFrmSrc(label, id, trustDecayType,
+            Neo4jStore.getInstance()),
+        yayNnay);
   }
 
   /**
@@ -123,8 +130,9 @@ public class DataStoreManager {
    * @return
    */
   public boolean getResponseFrmSCC(String label, String id, int numVertices,
+      TRUST_DECAY_TYPE trustDecayType,
       final Pair<Set<Long>, Set<Long>> yayNnay) {
-    return TarjanConnectedComponents.computeResponse(label, id,
+    return TarjanConnectedComponents.computeResponse(label, id,trustDecayType,
         TarjanConnectedComponents.stronglyConnectedComponents(numVertices,
             label, Neo4jStore.getInstance()),
         Neo4jStore.getInstance(), yayNnay);
@@ -141,7 +149,7 @@ public class DataStoreManager {
     logger.info("Stopping Database");
     this.dataStore.stopServer();
   }
-  
+
   /**
    * 
    * @param labelName
@@ -154,18 +162,19 @@ public class DataStoreManager {
     for (Long uid : uids) {
       try (Transaction tx = neo4jStore.getGraphDB().beginTx()) {
         final Node node = neo4jStore.getNode(labelName, String.valueOf(uid));
-  
+
         final Iterator<Relationship> itr = node
             .getRelationships(Direction.INCOMING).iterator();
-  
+
         while (itr.hasNext()) {
           Relationship relationship = itr.next();
           float edgeWeight = (float) relationship
               .getProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT);
-  
+
           if (feedback && edgeWeight - AppConstants.FEEDBACK_TRUST_REWARD > 0) {
             edgeWeight = edgeWeight - AppConstants.FEEDBACK_TRUST_REWARD;
-          } else if (!feedback && edgeWeight + AppConstants.FEEDBACK_TRUST_REWARD < 1) {
+          } else if (!feedback
+              && edgeWeight + AppConstants.FEEDBACK_TRUST_REWARD < 1) {
             edgeWeight = edgeWeight + AppConstants.FEEDBACK_TRUST_REWARD;
           }
           relationship.setProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT,
@@ -173,7 +182,7 @@ public class DataStoreManager {
         } // while
         tx.success();
       } // try
-  
+
     } // for
   }
 

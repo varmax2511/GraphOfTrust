@@ -17,6 +17,7 @@ import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.datastore.DataStoreManager;
 import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
 import edu.buffalo.cse.wot.neo4j.utils.QaRandomDistributor;
+import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 
 public class TestDijkstraSmallDense {
 
@@ -45,7 +46,8 @@ public class TestDijkstraSmallDense {
         .getUnshuffledSplit(uids, 0.75f, uids.size(), id);
 
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+        AppConstants.LABEL_USER, String.valueOf(id),
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
 
   @org.junit.Test
@@ -57,7 +59,8 @@ public class TestDijkstraSmallDense {
 
     // find the shortest path
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+        AppConstants.LABEL_USER, String.valueOf(id),
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
 
   /**
@@ -71,7 +74,8 @@ public class TestDijkstraSmallDense {
         .getUnshuffledSplit(uids, 0.25f, uids.size(), id);
 
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+        AppConstants.LABEL_USER, String.valueOf(id),
+        TRUST_DECAY_TYPE.CUMULATIVE_TRUST_DECAY, distribution));
   }
 
   @org.junit.Test
@@ -81,11 +85,9 @@ public class TestDijkstraSmallDense {
         .getUnshuffledSplit(uids, 0.1f, uids.size(), id);
 
     assertFalse(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+        AppConstants.LABEL_USER, String.valueOf(id),
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
   }
-  
-  
-  
 
   @AfterClass
   public static void testDestroy() throws Exception {

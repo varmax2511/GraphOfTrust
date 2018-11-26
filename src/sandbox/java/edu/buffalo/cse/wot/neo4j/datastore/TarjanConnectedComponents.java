@@ -17,6 +17,7 @@ import org.neo4j.graphdb.Transaction;
 
 import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
+import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 
 /**
  * <pre>
@@ -139,12 +140,12 @@ public class TarjanConnectedComponents {
    * 
    * @param sccUids
    */
-  public static boolean computeResponse(String label, String uid,
+  public static boolean computeResponse(String label, String uid, TRUST_DECAY_TYPE trustDecayType,
       final List<List<String>> sccsUids, Neo4jStore neo4jStore,
       final Pair<Set<Long>, Set<Long>> yayNnay) {
 
     final Map<String, Float> shortesPaths = DijkstraAlgorithm
-        .findShortedPathFrmSrc(label, uid, neo4jStore);
+        .findShortedPathFrmSrc(label, uid, trustDecayType, neo4jStore);
 
     final Map<String, Boolean> sccUids2Response = new HashMap<>();
 

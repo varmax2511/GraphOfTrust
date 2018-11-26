@@ -3,7 +3,6 @@ package edu.buffalo.cse.wot.neo4j.datastore;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -21,6 +20,7 @@ import org.neo4j.graphdb.Transaction;
 import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils;
+import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 
 /**
  * Given a start node, perform a topological sort of the
@@ -42,7 +42,7 @@ public class DijkstraAlgorithm {
    * @return
    */
   public static Map<String, Float> findShortedPathFrmSrc(String labelName,
-      String uid, Neo4jStore neo4jStore) {
+      String uid, TRUST_DECAY_TYPE trustDecayType, Neo4jStore neo4jStore) {
 
     // null check
     if (StringUtils.isBlank(labelName) || StringUtils.isBlank(uid)) {
@@ -63,18 +63,18 @@ public class DijkstraAlgorithm {
       }
 
       final Set<String> visited = new HashSet<>();
-      final Map<String, Pair<Node, Integer>> unvisited = new HashMap<>();
+      final Map<String, Container> unvisited = new HashMap<>();
       dist.put(uid, 0f);
-      unvisited.put(uid, new Pair<Node, Integer>(srcNode, 0));
+      unvisited.put(uid, new Container(srcNode, 0, 1, 1));
 
       // visit every node
       while (unvisited.size() > 0) {
         final String minUid = minDistance(dist, unvisited);
-        final Pair<Node, Integer> nodeNhop = unvisited.get(minUid);
+        final Container nodeContainer = unvisited.get(minUid);
         unvisited.remove(minUid);
         visited.add(minUid);
 
-        final Iterator<Relationship> itr = nodeNhop.getKey()
+        final Iterator<Relationship> itr = nodeContainer.getNode()
             .getRelationships(Direction.OUTGOING).iterator();
 
         // visit its adjacency
@@ -90,20 +90,42 @@ public class DijkstraAlgorithm {
             continue;
           }
 
+          float edgeWeight = (float) relationship
+              .getProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT);
+
+          final Container newNodeContainer = new Container(endNode,
+              nodeContainer.getHops() + 1,
+              nodeContainer.getEdgeWeightSum() + edgeWeight,
+              nodeContainer.getEdgeWeightPrd() * edgeWeight == 0
+                  ? 1
+                  : edgeWeight);
+
+          float cost = 0;
           // compute cost
-          final float cost = dist.get(minUid)
-              + (float) relationship
-                  .getProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT)
-              + (float) TrustDecayUtils
-                  .logarithmicTrustDecay(nodeNhop.getValue() + 1);
+          switch (trustDecayType) {
+            case CUMULATIVE_TRUST_DECAY :
+              cost = dist.get(minUid)
+                  + (float) relationship
+                      .getProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT)
+                  + (float) TrustDecayUtils.cumulativeTrust2(
+                      newNodeContainer.edgeWeightSum,
+                      newNodeContainer.edgeWeightPrd,
+                      newNodeContainer.getHops() + 1);
+              break;
+            case LOG_TRUST_DECAY :
+              cost = dist.get(minUid)
+                  + (float) relationship
+                      .getProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT)
+                  + (float) TrustDecayUtils
+                      .logarithmicTrustDecay(newNodeContainer.getHops() + 1);
+          }
 
           // if cost is less than already computed cost
           if (!dist.containsKey(endUid) || dist.get(endUid) > cost) {
             dist.put(endUid, cost);
           }
 
-          unvisited.put(endUid,
-              new Pair<Node, Integer>(endNode, nodeNhop.getValue() + 1));
+          unvisited.put(endUid, newNodeContainer);
         } // while
 
       } // while
@@ -120,7 +142,7 @@ public class DijkstraAlgorithm {
    * @return
    */
   private static String minDistance(Map<String, Float> dist,
-      Map<String, Pair<Node, Integer>> unvisited) {
+      Map<String, Container> unvisited) {
     float min = Float.MAX_VALUE;
     String minUid = StringUtils.EMPTY;
 
@@ -209,9 +231,9 @@ public class DijkstraAlgorithm {
    * Q&A
    * 
    * @param uid2ShortestPaths
-   *           !empty
+   *          !empty
    * @param yayNnay
-   *           !empty
+   *          !empty
    * @return
    */
   public static boolean getShortestStrongestResponse(
@@ -249,4 +271,40 @@ public class DijkstraAlgorithm {
     return minResponse;
   }
 
+  /**
+   * 
+   * @author varunjai
+   *
+   */
+  static class Container {
+    private final Node node;
+    private final int hops;
+    private final float edgeWeightSum;
+    private final float edgeWeightPrd;
+
+    public Container(Node node, int hops, float edgeWeightSum,
+        float edgeWeightPrd) {
+      this.node = node;
+      this.hops = hops;
+      this.edgeWeightSum = edgeWeightSum;
+      this.edgeWeightPrd = edgeWeightPrd;
+    }
+
+    public Node getNode() {
+      return node;
+    }
+
+    public int getHops() {
+      return hops;
+    }
+
+    public float getEdgeWeightSum() {
+      return edgeWeightSum;
+    }
+
+    public float getEdgeWeightPrd() {
+      return edgeWeightPrd;
+    }
+
+  }
 }
