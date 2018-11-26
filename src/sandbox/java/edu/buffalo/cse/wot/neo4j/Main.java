@@ -2,6 +2,8 @@ package edu.buffalo.cse.wot.neo4j;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import edu.buffalo.cse.wot.neo4j.datastore.DataStoreManager;
 import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
@@ -11,15 +13,16 @@ import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
  * @author varunjai
  *
  */
+@SpringBootApplication
 public class Main {
 
   private static Logger logger = LogManager.getLogger(Main.class);
   public static void main(String[] args) throws Exception {
     
     
-    JettyServer server = new JettyServer();
-    server.start();
-    
+    //JettyServer server = new JettyServer();
+    //server.start();
+    SpringApplication.run(Main.class, args);
     DataUtils.loadAdvogatoGraph(DataStoreManager.getInstance());
     
     /*UserNode node1 = new UserNode();

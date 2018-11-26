@@ -19,6 +19,11 @@ import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
 import edu.buffalo.cse.wot.neo4j.utils.QaRandomDistributor;
 import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 
+/**
+ * 
+ * @author varunjai
+ *
+ */
 public class TestDijkstraSmallDense {
 
   private static JettyServer server;
