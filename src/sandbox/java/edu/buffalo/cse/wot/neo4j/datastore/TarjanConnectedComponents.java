@@ -49,12 +49,8 @@ public class TarjanConnectedComponents {
     List<List<String>> sccs = new ArrayList<>();
     for (int i = 1; i <= numVertices; i++) {
       if (!disc.containsKey(String.valueOf(i))) {
-        List<String> scc = getSCCUtil(String.valueOf(i), disc, low, stack,
-            stackMember, labelName, neo4jStore);
-
-        if (!CollectionUtils.isEmpty(scc)) {
-          sccs.add(scc);
-        }
+        getSCCUtil(String.valueOf(i), disc, low, stack, stackMember, labelName,
+            neo4jStore, sccs);
       }
     } // for
     time = 0;
@@ -72,10 +68,10 @@ public class TarjanConnectedComponents {
    * @param labelName
    * @param neo4jStore
    */
-  public static List<String> getSCCUtil(String uid, Map<String, Integer> disc,
+  public static void getSCCUtil(String uid, Map<String, Integer> disc,
       Map<String, Integer> low, Stack<String> stack,
-      Map<String, Boolean> stackMember, String labelName,
-      Neo4jStore neo4jStore) {
+      Map<String, Boolean> stackMember, String labelName, Neo4jStore neo4jStore,
+      List<List<String>> sccs) {
 
     final List<String> scc = new ArrayList<>();
     disc.put(uid, ++time);
@@ -103,7 +99,8 @@ public class TarjanConnectedComponents {
         final String v = endNode.getProperty(AppConstants.NODE_UID).toString();
 
         if (!disc.containsKey(v)) {
-          getSCCUtil(v, disc, low, stack, stackMember, labelName, neo4jStore);
+          getSCCUtil(v, disc, low, stack, stackMember, labelName, neo4jStore,
+              sccs);
           low.put(uid, Math.min(low.get(uid), low.get(v)));
         } else if (stackMember.get(v)) {
           low.put(uid, Math.min(low.get(uid), disc.get(v)));
@@ -112,24 +109,23 @@ public class TarjanConnectedComponents {
 
       String w;
       if (low.get(uid) == disc.get(uid)) {
-        System.out.println();
         while (!stack.peek().equals(uid)) {
           w = stack.peek();
           scc.add(w);
-          System.out.print(w);
           stackMember.put(w, false);
           stack.pop();
         } // while
 
         w = stack.peek();
-        System.out.print(w);
         scc.add(w);
         stackMember.put(w, false);
         stack.pop();
       } // if
     } // try
 
-    return scc;
+    if (!CollectionUtils.isEmpty(scc)) {
+      sccs.add(scc);
+    }
   }
 
   /**
@@ -197,7 +193,8 @@ public class TarjanConnectedComponents {
 
     int yes = 0;
     int no = 0;
-    for (String uid : sccUids) {
+    for (String sUid : sccUids) {
+      long uid = Long.parseLong(sUid);
       if (yayNnay.getKey().contains(uid)) {
         yes++;
       } else if (yayNnay.getValue().contains(uid)) {

@@ -18,7 +18,7 @@ import edu.buffalo.cse.wot.neo4j.datastore.DataStoreManager;
 import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
 import edu.buffalo.cse.wot.neo4j.utils.QaRandomDistributor;
 
-public class TestDijkstraSmallDense {
+public class TestTarjanSmallSimple {
 
   private static JettyServer server;
   private static Logger logger = LogManager
@@ -31,65 +31,60 @@ public class TestDijkstraSmallDense {
     server.start();
 
     // load simple graph
-    uids = DataUtils.loadSmallDenseGraph();
+    uids = DataUtils.loadSmallGraph();
   }
 
   @org.junit.Test
-  public void testFixedDijkstra1() {
+  public void testFixedTarjan1() {
 
-    DataStoreManager.getInstance().getSccUids(AppConstants.LABEL_USER,
-        uids.size());
-
-    long id = 3;
+    final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
         .getUnshuffledSplit(uids, 0.75f, uids.size(), id);
 
-    assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+    assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
+        AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
+        distribution));
   }
-
+  
   @org.junit.Test
-  public void testFixedDijkstra2() {
+  public void testFixedTarjan2() {
 
-    long id = 3;
+    final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
         .getUnshuffledSplit(uids, 0.5f, uids.size(), id);
 
-    // find the shortest path
-    assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+    assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
+        AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
+        distribution));
   }
 
-  /**
-   * 
-   */
   @org.junit.Test
-  public void testFixedDijkstra3() {
+  public void testFixedTarjan3() {
 
-    long id = 2;
+    final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
         .getUnshuffledSplit(uids, 0.25f, uids.size(), id);
 
-    assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+    assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
+        AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
+        distribution));
   }
-
+  
   @org.junit.Test
-  public void testFixedDijkstra4() {
-    long id = 8;
+  public void testFixedTarjan4() {
+
+    final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
         .getUnshuffledSplit(uids, 0.1f, uids.size(), id);
 
-    assertFalse(DataStoreManager.getInstance().getShortestStrongestResponse(
-        AppConstants.LABEL_USER, String.valueOf(id), distribution));
+    assertFalse(DataStoreManager.getInstance().getResponseFrmSCC(
+        AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
+        distribution));
   }
-  
-  
-  
 
+  
   @AfterClass
   public static void testDestroy() throws Exception {
     server.stop();
   }
-
 }

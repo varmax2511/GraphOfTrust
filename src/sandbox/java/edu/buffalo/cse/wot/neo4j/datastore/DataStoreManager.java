@@ -1,14 +1,20 @@
 package edu.buffalo.cse.wot.neo4j.datastore;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
 
 import edu.buffalo.cse.wot.neo4j.DataStore;
 import edu.buffalo.cse.wot.neo4j.Pair;
+import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.model.UserNode;
 
 /**
@@ -136,6 +142,41 @@ public class DataStoreManager {
     this.dataStore.stopServer();
   }
   
+  /**
+   * 
+   * @param labelName
+   * @param feedback
+   * @param uids
+   */
+  public static void assignFeedback(String labelName, boolean feedback,
+      Set<Long> uids) {
+    final Neo4jStore neo4jStore = Neo4jStore.getInstance();
+    for (Long uid : uids) {
+      try (Transaction tx = neo4jStore.getGraphDB().beginTx()) {
+        final Node node = neo4jStore.getNode(labelName, String.valueOf(uid));
+  
+        final Iterator<Relationship> itr = node
+            .getRelationships(Direction.INCOMING).iterator();
+  
+        while (itr.hasNext()) {
+          Relationship relationship = itr.next();
+          float edgeWeight = (float) relationship
+              .getProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT);
+  
+          if (feedback && edgeWeight - AppConstants.FEEDBACK_TRUST_REWARD > 0) {
+            edgeWeight = edgeWeight - AppConstants.FEEDBACK_TRUST_REWARD;
+          } else if (!feedback && edgeWeight + AppConstants.FEEDBACK_TRUST_REWARD < 1) {
+            edgeWeight = edgeWeight + AppConstants.FEEDBACK_TRUST_REWARD;
+          }
+          relationship.setProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT,
+              edgeWeight);
+        } // while
+        tx.success();
+      } // try
+  
+    } // for
+  }
+
   public void reset() {
     if (this.dataStore == null) {
       return;

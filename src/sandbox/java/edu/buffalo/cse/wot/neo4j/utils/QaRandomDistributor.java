@@ -27,9 +27,9 @@ public class QaRandomDistributor {
    * @return
    */
   public static Pair<Set<Long>, Set<Long>> getShuffled(final List<Long> list,
-      float ratio) {
+      float ratio, long excludeId) {
 
-    return getShuffledSizedSplit(list, ratio, list.size());
+    return getShuffledSizedSplit(list, ratio, list.size(), excludeId);
   }
 
   /**
@@ -39,14 +39,16 @@ public class QaRandomDistributor {
    * @return
    */
   public static Pair<Set<Long>, Set<Long>> getUnshuffledSplit(
-      final List<Long> list, float ratio, int size) {
+      final List<Long> list, float ratio, int size, long excludeId) {
 
     // adjust size
-    if (size > list.size()) {
-      size = list.size();
+    if (size >= list.size()) {
+      size = list.size() - 1;
     }
 
     final List<Long> listCopy = new ArrayList<>(list);
+    listCopy.remove(excludeId);
+    
     final int n = (int) (ratio * size);
     return new Pair<Set<Long>, Set<Long>>(
         new HashSet<Long>(listCopy.subList(0, n)),
@@ -61,14 +63,15 @@ public class QaRandomDistributor {
    * @return
    */
   public static Pair<Set<Long>, Set<Long>> getShuffledSizedSplit(
-      final List<Long> list, float ratio, int size) {
+      final List<Long> list, float ratio, int size, long excludeId) {
 
     // adjust size
-    if (size > list.size()) {
-      size = list.size();
+    if (size >= list.size()) {
+      size = list.size() - 1;
     }
 
     final List<Long> listCopy = new ArrayList<>(list);
+    listCopy.remove(excludeId);
     Collections.shuffle(listCopy);
     final int n = (int) (ratio * size);
     return new Pair<Set<Long>, Set<Long>>(

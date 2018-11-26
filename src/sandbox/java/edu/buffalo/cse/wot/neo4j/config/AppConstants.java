@@ -12,5 +12,7 @@ public interface AppConstants {
   public String NODE_UID = "uid";
   public String RELATIONSHIP_EDGE_WEIGHT = "weight";
   public String RELATIONSHIP_TYPE_EDGE = "EDGE";
+  public float FEEDBACK_TRUST_REWARD = 0.005f;
+  
 
 }
