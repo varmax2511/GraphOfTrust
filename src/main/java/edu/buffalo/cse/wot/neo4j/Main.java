@@ -15,12 +15,6 @@ public class Main {
 
   private static Logger logger = LogManager.getLogger(Main.class);
   public static void main(String[] args) throws Exception {
-    
-    
-    //JettyServer server = new JettyServer();
-    //server.start();
     SpringApplication.run(Main.class, args);
-    //DataUtils.loadAdvogatoGraph(DataStoreManager.getInstance());
-    // server.stop();
   }
 }
