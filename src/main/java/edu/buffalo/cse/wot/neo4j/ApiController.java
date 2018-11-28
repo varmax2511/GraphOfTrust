@@ -17,6 +17,7 @@ import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.datastore.DataStoreManager;
 import edu.buffalo.cse.wot.neo4j.datastore.TrustOutput;
 import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
+import edu.buffalo.cse.wot.neo4j.utils.DataUtils.GRAPH_TYPE;
 import edu.buffalo.cse.wot.neo4j.utils.QaRandomDistributor;
 import edu.buffalo.cse.wot.neo4j.utils.ScoreUtils;
 import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
@@ -37,6 +38,18 @@ public class ApiController {
 
   static {
     dsm = DataStoreManager.getInstance();
+  }
+
+  @RequestMapping(
+      value = "/graphs",
+      method = RequestMethod.GET,
+      produces = "application/json")
+  public @ResponseBody List<String> getAvailableGraphs() {
+    List<String> graphs = new ArrayList<>();
+    graphs.add(GRAPH_TYPE.SMALL_SIMPLE.toString());
+    graphs.add(GRAPH_TYPE.SMALL_DENSE.toString());
+    graphs.add(GRAPH_TYPE.ADVOGATO.toString());
+    return graphs;
   }
 
   @RequestMapping(
