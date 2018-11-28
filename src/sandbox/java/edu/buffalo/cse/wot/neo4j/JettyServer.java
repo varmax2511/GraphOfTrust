@@ -54,8 +54,9 @@ public class JettyServer {
   
   /**
    * Clean the 
+   * @throws InterruptedException 
    */
-  public void reset() {
+  public void reset() throws InterruptedException {
     DataStoreManager.getInstance().reset();
   }
 }

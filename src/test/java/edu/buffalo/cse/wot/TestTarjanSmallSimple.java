@@ -24,15 +24,17 @@ public class TestTarjanSmallSimple {
   private static JettyServer server;
   private static Logger logger = LogManager
       .getLogger(TestDijkstraSmallSimple.class);
-  static List<Long> uids;
+  private static List<Long> uids;
+  private static DataStoreManager dsm;
 
   @BeforeClass
   public static void testPrep() throws Exception {
     server = new JettyServer();
     server.start();
+    dsm = DataStoreManager.getInstance();
 
     // load simple graph
-    uids = DataUtils.loadSmallGraph();
+    uids = DataUtils.loadSmallGraph(dsm);
   }
 
   @org.junit.Test
@@ -44,7 +46,7 @@ public class TestTarjanSmallSimple {
 
     assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
-        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution).getResult());
   }
 
   @org.junit.Test
@@ -56,7 +58,7 @@ public class TestTarjanSmallSimple {
 
     assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
-        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution).getResult());
   }
 
   @org.junit.Test
@@ -68,7 +70,7 @@ public class TestTarjanSmallSimple {
 
     assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
-        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution).getResult());
   }
 
   @org.junit.Test
@@ -80,7 +82,7 @@ public class TestTarjanSmallSimple {
 
     assertFalse(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
-        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution).getResult());
   }
 
   @AfterClass

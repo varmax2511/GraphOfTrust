@@ -101,13 +101,13 @@ public class DataStoreManager {
    * @param yayNnay
    * @return
    */
-  public boolean getShortestStrongestResponse(String label, String id,
+  public TrustOutput getShortestStrongestResponse(String label, String id,
       TRUST_DECAY_TYPE trustDecayType,
       final Pair<Set<Long>, Set<Long>> yayNnay) {
     return DijkstraAlgorithm.getShortestStrongestResponse(
         DijkstraAlgorithm.findShortedPathFrmSrc(label, id, trustDecayType,
             Neo4jStore.getInstance()),
-        yayNnay);
+        trustDecayType, yayNnay);
   }
 
   /**
@@ -129,10 +129,10 @@ public class DataStoreManager {
    * @param yayNnay
    * @return
    */
-  public boolean getResponseFrmSCC(String label, String id, int numVertices,
+  public TrustOutput getResponseFrmSCC(String label, String id, int numVertices,
       TRUST_DECAY_TYPE trustDecayType,
       final Pair<Set<Long>, Set<Long>> yayNnay) {
-    return TarjanConnectedComponents.computeResponse(label, id,trustDecayType,
+    return TarjanConnectedComponents.computeResponse(label, id, trustDecayType,
         TarjanConnectedComponents.stronglyConnectedComponents(numVertices,
             label, Neo4jStore.getInstance()),
         Neo4jStore.getInstance(), yayNnay);

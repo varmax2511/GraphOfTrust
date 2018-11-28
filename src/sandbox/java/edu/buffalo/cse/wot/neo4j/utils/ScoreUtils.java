@@ -100,12 +100,17 @@ public class ScoreUtils {
     }
 
     // process the list of all node UID's which participated
-    // if feedback is positive
+    // reward all those gave correct answer and penalize all thos who gave
+    // incorrect answer
     if (actualAnswer) {
-      DataStoreManager.assignFeedback(labelName, feedback,
+      DataStoreManager.assignFeedback(labelName, true,
           distribution.getKey());
-    } else {
-      DataStoreManager.assignFeedback(labelName, feedback,
+      DataStoreManager.assignFeedback(labelName, false,
+          distribution.getValue());
+    }else {
+      DataStoreManager.assignFeedback(labelName, false,
+          distribution.getKey());
+      DataStoreManager.assignFeedback(labelName, true,
           distribution.getValue());
     }
   }

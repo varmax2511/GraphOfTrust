@@ -13,7 +13,20 @@ import org.apache.logging.log4j.Logger;
 public class TrustDecayUtils {
 
   public enum TRUST_DECAY_TYPE {
-    LOG_TRUST_DECAY, CUMULATIVE_TRUST_DECAY
+    LOG_TRUST_DECAY {
+      @Override
+      public String toString() {
+        // TODO Auto-generated method stub
+        return "Logarithmic Trust Decay";
+      }
+    },
+    CUMULATIVE_TRUST_DECAY {
+      @Override
+      public String toString() {
+        // TODO Auto-generated method stub
+        return "Probabilistic Trust Decay";
+      }
+    }
   }
   private static Logger logger = LogManager.getLogger(TrustDecayUtils.class);
   /**

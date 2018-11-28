@@ -140,6 +140,13 @@ class Neo4jStore implements DataStore {
   @Override
   public void stopServer() {
     graphDb.shutdown();
+    try {
+      logger.info("Cleaning Neo4j instance files");
+      FileUtils.deleteRecursively(storeDir);
+    } catch (Throwable t) {
+      // TODO Auto-generated catch block
+      logger.warn("Database cleanup failed:" + t.getMessage());
+    }
   }
 
   @Override

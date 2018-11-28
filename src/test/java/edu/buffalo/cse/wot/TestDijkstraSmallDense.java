@@ -27,6 +27,7 @@ import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 public class TestDijkstraSmallDense {
 
   private static JettyServer server;
+  private static DataStoreManager dsm;
   private static Logger logger = LogManager
       .getLogger(TestDijkstraSmallSimple.class);
   static List<Long> uids;
@@ -35,16 +36,14 @@ public class TestDijkstraSmallDense {
   public static void testPrep() throws Exception {
     server = new JettyServer();
     server.start();
-
+    dsm = DataStoreManager.getInstance();
+    
     // load simple graph
-    uids = DataUtils.loadSmallDenseGraph();
+    uids = DataUtils.loadSmallDenseGraph(dsm);
   }
 
   @org.junit.Test
   public void testFixedDijkstra1() {
-
-    DataStoreManager.getInstance().getSccUids(AppConstants.LABEL_USER,
-        uids.size());
 
     long id = 3;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
@@ -52,7 +51,7 @@ public class TestDijkstraSmallDense {
 
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
         AppConstants.LABEL_USER, String.valueOf(id),
-        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution).getResult());
   }
 
   @org.junit.Test
@@ -65,7 +64,7 @@ public class TestDijkstraSmallDense {
     // find the shortest path
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
         AppConstants.LABEL_USER, String.valueOf(id),
-        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution).getResult());
   }
 
   /**
@@ -80,7 +79,7 @@ public class TestDijkstraSmallDense {
 
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
         AppConstants.LABEL_USER, String.valueOf(id),
-        TRUST_DECAY_TYPE.CUMULATIVE_TRUST_DECAY, distribution));
+        TRUST_DECAY_TYPE.CUMULATIVE_TRUST_DECAY, distribution).getResult());
   }
 
   @org.junit.Test
@@ -91,7 +90,7 @@ public class TestDijkstraSmallDense {
 
     assertFalse(DataStoreManager.getInstance().getShortestStrongestResponse(
         AppConstants.LABEL_USER, String.valueOf(id),
-        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution));
+        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, distribution).getResult());
   }
 
   @AfterClass

@@ -1,8 +1,5 @@
 package edu.buffalo.cse.wot.neo4j.utils;
 
-import java.util.Set;
-
-import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.model.GraphNode;
 import edu.buffalo.cse.wot.neo4j.model.UserNode;

@@ -25,7 +25,7 @@ import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
  * <a href=
 'https://www.geeksforgeeks.org/tarjan-algorithm-find-strongly-connected-components/'>Tarjan's algorithm</a>
  * </pre>
- * 
+ *
  * @author varunjai
  *
  */
@@ -33,7 +33,7 @@ public class TarjanConnectedComponents {
 
   static int time;
   /**
-   * 
+   *
    * @param numVertices
    * @param labelName
    * @param neo4jStore
@@ -47,7 +47,7 @@ public class TarjanConnectedComponents {
     final Map<String, Boolean> stackMember = new HashMap<>();
 
     time = 0;
-    List<List<String>> sccs = new ArrayList<>();
+    final List<List<String>> sccs = new ArrayList<>();
     for (int i = 1; i <= numVertices; i++) {
       if (!disc.containsKey(String.valueOf(i))) {
         getSCCUtil(String.valueOf(i), disc, low, stack, stackMember, labelName,
@@ -60,7 +60,7 @@ public class TarjanConnectedComponents {
   }
 
   /**
-   * 
+   *
    * @param uid
    * @param disc
    * @param low
@@ -137,19 +137,19 @@ public class TarjanConnectedComponents {
    * final answer. The concept of using SCC's is that people tend to trust
    * people with whom they are strongly connected rather than with people with
    * whom they have mere acquaintances.
-   * 
+   *
    * @param sccUids
    */
-  public static boolean computeResponse(String label, String uid, TRUST_DECAY_TYPE trustDecayType,
-      final List<List<String>> sccsUids, Neo4jStore neo4jStore,
-      final Pair<Set<Long>, Set<Long>> yayNnay) {
+  public static TrustOutput computeResponse(String label, String uid,
+      TRUST_DECAY_TYPE trustDecayType, final List<List<String>> sccsUids,
+      Neo4jStore neo4jStore, final Pair<Set<Long>, Set<Long>> yayNnay) {
 
     final Map<String, Float> shortesPaths = DijkstraAlgorithm
         .findShortedPathFrmSrc(label, uid, trustDecayType, neo4jStore);
 
-    final Map<String, Boolean> sccUids2Response = new HashMap<>();
+    final Map<String, Integer> sccUids2Response = new HashMap<>();
 
-    for (List<String> sccUids : sccsUids) {
+    for (final List<String> sccUids : sccsUids) {
       // empty
       if (CollectionUtils.isEmpty(sccUids)) {
         continue;
@@ -168,34 +168,45 @@ public class TarjanConnectedComponents {
      * Compute the weighted average of yay sayers and weighted average of nay
      * sayers.
      */
-    for (Map.Entry<String, Boolean> entry : sccUids2Response.entrySet()) {
-      float trust = shortesPaths.containsKey(entry.getKey())
+    for (final Map.Entry<String, Integer> entry : sccUids2Response.entrySet()) {
+      // SCC couldn't reach a decision
+      if (entry.getValue() == 0) {
+        continue;
+      }
+      final float trust = shortesPaths.containsKey(entry.getKey())
           ? shortesPaths.get(entry.getKey())
           : 0.2f;
-      if (entry.getValue()) {
-        yayTrust += trust;
+      if (entry.getValue() > 1) {
+        yayTrust += trust * entry.getValue();
         yayCnt++;
       } else {
-        nayTrust += trust;
+        nayTrust += trust * -1 * entry.getValue();
         nayCnt++;
       }
     } // for
 
-    return (yayTrust / yayCnt) > (nayTrust / nayCnt);
+    final TrustOutput trustOutput = new TrustOutput();
+    trustOutput.setResult((yayTrust / yayCnt) < (nayTrust / nayCnt));
+    trustOutput.setConfidence(
+        trustOutput.getResult() ? (yayTrust / yayCnt) : (nayTrust / nayCnt));
+    trustOutput
+        .setHeuristic(AppConstants.STRONGLY_CONNECTED_COMPONENTS_HEURISTIC);
+    trustOutput.setTrustDecayType(trustDecayType.toString());
+    return trustOutput;
   }
 
   /**
-   * 
+   *
    * @param sccUids
    * @param yayNnay
    */
-  private static boolean computeSccResponse(List<String> sccUids,
+  private static int computeSccResponse(List<String> sccUids,
       final Pair<Set<Long>, Set<Long>> yayNnay) {
 
     int yes = 0;
     int no = 0;
-    for (String sUid : sccUids) {
-      long uid = Long.parseLong(sUid);
+    for (final String sUid : sccUids) {
+      final long uid = Long.parseLong(sUid);
       if (yayNnay.getKey().contains(uid)) {
         yes++;
       } else if (yayNnay.getValue().contains(uid)) {
@@ -203,6 +214,9 @@ public class TarjanConnectedComponents {
       }
     } // for
 
-    return yes > no ? true : false;
+    if (yes == 0 && no == 0) {
+      return 0;
+    }
+    return yes > no ? 1 * sccUids.size() : -1 * sccUids.size();
   }
 }

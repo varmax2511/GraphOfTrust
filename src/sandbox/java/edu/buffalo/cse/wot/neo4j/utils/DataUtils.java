@@ -25,6 +25,48 @@ import edu.buffalo.cse.wot.neo4j.model.UserNode;
  */
 public class DataUtils {
 
+  public enum GRAPH_TYPE {
+    SMALL_DENSE {
+      @Override
+      public String toString() {
+        // TODO Auto-generated method stub
+        return "SMALL_DENSE";
+      }
+    },
+    SMALL_SIMPLE {
+      @Override
+      public String toString() {
+        // TODO Auto-generated method stub
+        return "SMALL_SIMPLE";
+      }
+    },
+    ADVOGATO {
+      @Override
+      public String toString() {
+        // TODO Auto-generated method stub
+        return "ADVOGATO";
+      }
+    }
+
+  }
+
+  /**
+   * 
+   * @param graphType
+   * @param dsm
+   * @return
+   * @throws IOException
+   */
+  public static List<Long> loadGraph(String graphType, DataStoreManager dsm)
+      throws IOException {
+    if (GRAPH_TYPE.ADVOGATO.toString().equalsIgnoreCase(graphType)) {
+      return loadAdvogatoGraph(dsm);
+    } else if (GRAPH_TYPE.SMALL_DENSE.toString().equalsIgnoreCase(graphType)) {
+      return loadSmallDenseGraph(dsm);
+    }
+    return loadSmallGraph(dsm);
+  }
+
   private static Logger logger = LogManager.getLogger(DataUtils.class);
 
   /**
@@ -137,7 +179,7 @@ public class DataUtils {
    * 
    * @return
    */
-  public static List<Long> loadSmallGraph() {
+  public static List<Long> loadSmallGraph(DataStoreManager dsm) {
     final UserNode node1 = new UserNode();
     node1.setProperty("uid", "1");
     node1.setProperty("name", "A");
@@ -170,7 +212,6 @@ public class DataUtils {
 
     node5.addEdge(new Edge(node5, node3, 1.0f - 0.4f));
 
-    final DataStoreManager dsm = DataStoreManager.getInstance();
     dsm.addNode(node1);
     dsm.addNode(node2);
     dsm.addNode(node3);
@@ -191,7 +232,7 @@ public class DataUtils {
    * 
    * @return
    */
-  public static List<Long> loadSmallDenseGraph() {
+  public static List<Long> loadSmallDenseGraph(DataStoreManager dsm) {
     final UserNode node1 = new UserNode();
     node1.setProperty("uid", "1");
     node1.setProperty("name", "A");
@@ -256,7 +297,6 @@ public class DataUtils {
 
     node10.addEdge(new Edge(node10, node8, 1.0f - 0.4f));
 
-    final DataStoreManager dsm = DataStoreManager.getInstance();
     dsm.addNode(node1);
     dsm.addNode(node2);
     dsm.addNode(node3);

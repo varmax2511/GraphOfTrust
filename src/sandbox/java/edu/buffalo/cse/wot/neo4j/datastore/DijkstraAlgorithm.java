@@ -35,7 +35,7 @@ public class DijkstraAlgorithm {
   private static Logger logger = LogManager.getLogger(DijkstraAlgorithm.class);
 
   /**
-   * 
+   *
    * @param labelName
    * @param uid
    * @param neo4jStore
@@ -90,7 +90,7 @@ public class DijkstraAlgorithm {
             continue;
           }
 
-          float edgeWeight = (float) relationship
+          final float edgeWeight = (float) relationship
               .getProperty(AppConstants.RELATIONSHIP_EDGE_WEIGHT);
 
           final Container newNodeContainer = new Container(endNode,
@@ -136,7 +136,7 @@ public class DijkstraAlgorithm {
 
   /**
    * Find the minimum distance node {@link AppConstants#NODE_UID}.
-   * 
+   *
    * @param dist
    * @param unvisited
    * @return
@@ -188,7 +188,7 @@ public class DijkstraAlgorithm {
   /**
    * Get the shortest path node uid which participated in the answering process,
    * responding in yay or nay.
-   * 
+   *
    * @param uid2ShortestPaths
    * @param yayNnay
    * @return
@@ -203,14 +203,14 @@ public class DijkstraAlgorithm {
 
     float min = Float.MAX_VALUE;
     long minUid = -1;
-    for (Map.Entry<String, Float> entry : uid2ShortestPaths.entrySet()) {
-      float val = entry.getValue();
+    for (final Map.Entry<String, Float> entry : uid2ShortestPaths.entrySet()) {
+      final float val = entry.getValue();
 
       if (val >= min) {
         continue;
       }
 
-      long uid = Long.parseLong(entry.getKey());
+      final long uid = Long.parseLong(entry.getKey());
       // check if the node participated in answering the question
       // pair key represents nodes answering yes and value represents nodes
       // answering no
@@ -229,15 +229,16 @@ public class DijkstraAlgorithm {
   /**
    * Get the shortest strongest path from the source which participated in the
    * Q&A
-   * 
+   *
    * @param uid2ShortestPaths
    *          !empty
    * @param yayNnay
    *          !empty
    * @return
    */
-  public static boolean getShortestStrongestResponse(
+  public static TrustOutput getShortestStrongestResponse(
       final Map<String, Float> uid2ShortestPaths,
+      final TRUST_DECAY_TYPE trustDecayType,
       final Pair<Set<Long>, Set<Long>> yayNnay) {
     // validate
     if (uid2ShortestPaths == null || MapUtils.isEmpty(uid2ShortestPaths)) {
@@ -247,14 +248,14 @@ public class DijkstraAlgorithm {
     float min = Float.MAX_VALUE;
     long minUid = -1;
     boolean minResponse = false;
-    for (Map.Entry<String, Float> entry : uid2ShortestPaths.entrySet()) {
-      float val = entry.getValue();
+    for (final Map.Entry<String, Float> entry : uid2ShortestPaths.entrySet()) {
+      final float val = entry.getValue();
 
       if (val >= min) {
         continue;
       }
 
-      long uid = Long.parseLong(entry.getKey());
+      final long uid = Long.parseLong(entry.getKey());
       // check if the node participated in answering the question
       // pair key represents nodes answering yes and value represents nodes
       // answering no
@@ -268,11 +269,17 @@ public class DijkstraAlgorithm {
       minResponse = yayNnay.getKey().contains(minUid) ? true : false;
 
     } // for
-    return minResponse;
+
+    final TrustOutput trustOutput = new TrustOutput();
+    trustOutput.setResult(minResponse);
+    trustOutput.setConfidence(min);
+    trustOutput.setHeuristic(AppConstants.SHORTEST_STRONGEST_PATH_HEURISTIC);
+    trustOutput.setTrustDecayType(trustDecayType.toString());
+    return trustOutput;
   }
 
   /**
-   * 
+   *
    * @author varunjai
    *
    */
