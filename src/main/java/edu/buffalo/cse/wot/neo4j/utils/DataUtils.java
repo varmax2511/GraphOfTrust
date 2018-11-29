@@ -26,18 +26,18 @@ import edu.buffalo.cse.wot.neo4j.model.UserNode;
 public class DataUtils {
 
   public enum GRAPH_TYPE {
-    SMALL_DENSE {
+    SMALL_DENSE1 {
       @Override
       public String toString() {
         // TODO Auto-generated method stub
-        return "SMALL_DENSE";
+        return "SMALL_DENSE1";
       }
     },
-    SMALL_SIMPLE {
+    SMALL_SIMPLE1 {
       @Override
       public String toString() {
         // TODO Auto-generated method stub
-        return "SMALL_SIMPLE";
+        return "SMALL_SIMPLE1";
       }
     },
     ADVOGATO {
@@ -61,7 +61,7 @@ public class DataUtils {
       throws IOException {
     if (GRAPH_TYPE.ADVOGATO.toString().equalsIgnoreCase(graphType)) {
       return loadAdvogatoGraph(dsm);
-    } else if (GRAPH_TYPE.SMALL_DENSE.toString().equalsIgnoreCase(graphType)) {
+    } else if (GRAPH_TYPE.SMALL_DENSE1.toString().equalsIgnoreCase(graphType)) {
       return loadSmallDenseGraph(dsm);
     }
     return loadSmallGraph(dsm);
