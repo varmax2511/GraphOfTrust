@@ -176,7 +176,7 @@ public class TarjanConnectedComponents {
       final float trust = shortesPaths.containsKey(entry.getKey())
           ? shortesPaths.get(entry.getKey())
           : 0.2f;
-      if (entry.getValue() > 1) {
+      if (entry.getValue() > 0) {
         yayTrust += trust * entry.getValue();
         yayCnt++;
       } else {
@@ -186,7 +186,9 @@ public class TarjanConnectedComponents {
     } // for
 
     final TrustOutput trustOutput = new TrustOutput();
-    trustOutput.setResult((yayTrust / yayCnt) < (nayTrust / nayCnt));
+    trustOutput.setResult(yayCnt == 0 ? false : nayCnt == 0 ? true :
+        (yayTrust / yayCnt) < (nayTrust / nayCnt));
+    
     trustOutput.setConfidence(
         trustOutput.getResult() ? (yayTrust / yayCnt) : (nayTrust / nayCnt));
     trustOutput

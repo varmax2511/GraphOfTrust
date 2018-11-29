@@ -46,8 +46,8 @@ public class ApiController {
       produces = "application/json")
   public @ResponseBody List<String> getAvailableGraphs() {
     List<String> graphs = new ArrayList<>();
-    graphs.add(GRAPH_TYPE.SMALL_SIMPLE.toString());
-    graphs.add(GRAPH_TYPE.SMALL_DENSE.toString());
+    graphs.add(GRAPH_TYPE.SMALL_SIMPLE1.toString());
+    graphs.add(GRAPH_TYPE.SMALL_DENSE1.toString());
     graphs.add(GRAPH_TYPE.ADVOGATO.toString());
     return graphs;
   }
@@ -58,9 +58,10 @@ public class ApiController {
       produces = "application/json")
   public @ResponseBody Integer configure(@PathVariable String graphType) {
 
-    dsm.reset();
-    uids.clear();
+    logger.info("confguring.....");
     try {
+      dsm.reset();
+      uids.clear();
       uids = DataUtils.loadGraph(graphType, dsm);
       return uids.size();
     } catch (final Throwable t) {
@@ -78,30 +79,47 @@ public class ApiController {
       @RequestParam(defaultValue = "false") Boolean shuffled,
       @RequestParam(defaultValue = "5") Integer participants) {
 
-    logger.info("request..");
-    if (participants == null || participants > uids.size()) {
-      participants = uids.size();
+    try {
+      logger.info("request..");
+      if (participants == null || participants > uids.size()) {
+        participants = uids.size();
+      }
+
+      // algorithm, trust decay type, participants, fixed/shuffled
+      if (!shuffled) {
+        yayNnay = QaRandomDistributor.getUnshuffledSplit(uids, ratio,
+            participants, id);
+      } else {
+        yayNnay = QaRandomDistributor.getShuffledSizedSplit(uids, ratio,
+            participants, id);
+      }
+
+      final List<TrustOutput> trustOutputs = new ArrayList<>();
+
+      trustOutputs.add(DataStoreManager.getInstance().getResponseFrmSCC(
+          AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
+          TRUST_DECAY_TYPE.LOG_TRUST_DECAY, yayNnay));
+
+      trustOutputs.add(DataStoreManager.getInstance().getResponseFrmSCC(
+          AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
+          TRUST_DECAY_TYPE.CUMULATIVE_TRUST_DECAY, yayNnay));
+
+      trustOutputs.add(DataStoreManager.getInstance()
+          .getShortestStrongestResponse(AppConstants.LABEL_USER,
+              String.valueOf(id), TRUST_DECAY_TYPE.LOG_TRUST_DECAY, yayNnay));
+
+      trustOutputs
+          .add(DataStoreManager.getInstance().getShortestStrongestResponse(
+              AppConstants.LABEL_USER, String.valueOf(id),
+              TRUST_DECAY_TYPE.CUMULATIVE_TRUST_DECAY, yayNnay));
+
+      return trustOutputs;
+    } catch (Throwable t) {
+      logger.error(t.getMessage());
+      t.printStackTrace();
     }
 
-    // algorithm, trust decay type, participants, fixed/shuffled
-    if (!shuffled) {
-      yayNnay = QaRandomDistributor.getUnshuffledSplit(uids, ratio,
-          participants, id);
-    } else {
-      yayNnay = QaRandomDistributor.getShuffledSizedSplit(uids, ratio,
-          participants, id);
-    }
-
-    final List<TrustOutput> trustOutputs = new ArrayList<>();
-    trustOutputs.add(DataStoreManager.getInstance().getResponseFrmSCC(
-        AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
-        TRUST_DECAY_TYPE.LOG_TRUST_DECAY, yayNnay));
-
-    trustOutputs.add(DataStoreManager.getInstance()
-        .getShortestStrongestResponse(AppConstants.LABEL_USER,
-            String.valueOf(id), TRUST_DECAY_TYPE.LOG_TRUST_DECAY, yayNnay));
-    return trustOutputs;
-
+    return null;
   }
 
   @RequestMapping(
