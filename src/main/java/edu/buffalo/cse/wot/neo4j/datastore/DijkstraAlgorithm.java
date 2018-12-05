@@ -272,9 +272,11 @@ public class DijkstraAlgorithm {
 
     final TrustOutput trustOutput = new TrustOutput();
     trustOutput.setResult(minResponse);
-    trustOutput.setConfidence(min);
+    trustOutput.setConfidence(1 / min);
     trustOutput.setHeuristic(AppConstants.SHORTEST_STRONGEST_PATH_HEURISTIC);
     trustOutput.setTrustDecayType(trustDecayType.toString());
+    trustOutput.setYesIds(yayNnay.getKey());
+    trustOutput.setNoIds(yayNnay.getValue());
     return trustOutput;
   }
 

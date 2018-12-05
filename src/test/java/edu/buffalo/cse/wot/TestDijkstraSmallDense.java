@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import edu.buffalo.cse.wot.neo4j.JettyServer;
 import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
@@ -39,7 +41,8 @@ public class TestDijkstraSmallDense {
     dsm = DataStoreManager.getInstance();
     
     // load simple graph
-    uids = DataUtils.loadSmallDenseGraph(dsm);
+    Pair<List<Long>, JsonNode> pair = DataUtils.loadSmallDenseGraph(dsm);
+    uids = pair.getKey();
   }
 
   @org.junit.Test
@@ -47,7 +50,7 @@ public class TestDijkstraSmallDense {
 
     long id = 3;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.75f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.75f, uids.size(), id, true);
 
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
         AppConstants.LABEL_USER, String.valueOf(id),
@@ -59,7 +62,7 @@ public class TestDijkstraSmallDense {
 
     long id = 3;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.5f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.5f, uids.size(), id, true);
 
     // find the shortest path
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
@@ -75,7 +78,7 @@ public class TestDijkstraSmallDense {
 
     long id = 2;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.25f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.25f, uids.size(), id, true);
 
     assertTrue(DataStoreManager.getInstance().getShortestStrongestResponse(
         AppConstants.LABEL_USER, String.valueOf(id),
@@ -86,7 +89,7 @@ public class TestDijkstraSmallDense {
   public void testFixedDijkstra4() {
     long id = 8;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.1f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.1f, uids.size(), id, true);
 
     assertFalse(DataStoreManager.getInstance().getShortestStrongestResponse(
         AppConstants.LABEL_USER, String.valueOf(id),

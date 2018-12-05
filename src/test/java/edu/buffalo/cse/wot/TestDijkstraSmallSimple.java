@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import edu.buffalo.cse.wot.neo4j.JettyServer;
 import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
@@ -40,7 +42,8 @@ public class TestDijkstraSmallSimple {
     dsm = DataStoreManager.getInstance();
 
     // load simple graph
-    uids = DataUtils.loadSmallGraph(dsm);
+    Pair<List<Long>, JsonNode> pair = DataUtils.loadSmallDenseGraph(dsm);
+    uids = pair.getKey();
   }
 
   @org.junit.Test
@@ -53,7 +56,7 @@ public class TestDijkstraSmallSimple {
 
     final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.75f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.75f, uids.size(), id, true);
 
     assertTrue(DataStoreManager.getInstance()
         .getShortestStrongestResponse(AppConstants.LABEL_USER,
@@ -66,7 +69,7 @@ public class TestDijkstraSmallSimple {
 
     final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.5f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.5f, uids.size(), id, true);
 
     // find the shortest path
     assertTrue(DataStoreManager.getInstance()
@@ -83,7 +86,7 @@ public class TestDijkstraSmallSimple {
 
     final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.25f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.25f, uids.size(), id, true);
 
     assertTrue(DataStoreManager.getInstance()
         .getShortestStrongestResponse(AppConstants.LABEL_USER,
@@ -99,7 +102,7 @@ public class TestDijkstraSmallSimple {
 
     final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.1f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.1f, uids.size(), id, true);
 
     assertFalse(DataStoreManager.getInstance()
         .getShortestStrongestResponse(AppConstants.LABEL_USER,
@@ -117,7 +120,7 @@ public class TestDijkstraSmallSimple {
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-          .getUnshuffledSplit(uids, 0.5f, uids.size(), id);
+          .getUnshuffledSplit(uids, 0.5f, uids.size(), id, true);
 
       expected.add(DataStoreManager.getInstance()
           .getShortestStrongestResponse(AppConstants.LABEL_USER,
@@ -143,15 +146,15 @@ public class TestDijkstraSmallSimple {
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-          .getUnshuffledSplit(uids, 0.5f, uids.size(), id);
+          .getUnshuffledSplit(uids, 0.5f, uids.size(), id, true);
 
       expected.add(DataStoreManager.getInstance()
           .getShortestStrongestResponse(AppConstants.LABEL_USER,
               String.valueOf(id), TRUST_DECAY_TYPE.LOG_TRUST_DECAY,
               distribution)
           .getResult());
-      ScoreUtils.processFeedback(AppConstants.LABEL_USER, actual.get(i),
-          expected.get(i), actual.get(i) == expected.get(i), distribution);
+      ScoreUtils.processFeedback(AppConstants.LABEL_USER, expected.get(i),
+          actual.get(i) == expected.get(i), distribution);
     } // for
 
     System.out.println("wt feedback" + ScoreUtils.getRMSE(expected, actual));
@@ -167,15 +170,15 @@ public class TestDijkstraSmallSimple {
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-          .getUnshuffledSplit(uids, 0.25f, uids.size(), id);
+          .getUnshuffledSplit(uids, 0.25f, uids.size(), id, true);
 
       expected.add(DataStoreManager.getInstance()
           .getShortestStrongestResponse(AppConstants.LABEL_USER,
               String.valueOf(id), TRUST_DECAY_TYPE.LOG_TRUST_DECAY,
               distribution)
           .getResult());
-      ScoreUtils.processFeedback(AppConstants.LABEL_USER, actual.get(i),
-          expected.get(i), actual.get(i) == expected.get(i), distribution);
+      ScoreUtils.processFeedback(AppConstants.LABEL_USER, expected.get(i),
+          actual.get(i) == expected.get(i), distribution);
     } // for
 
     System.out.println("feedback" + ScoreUtils.getRMSE(expected, actual));
@@ -194,15 +197,15 @@ public class TestDijkstraSmallSimple {
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-          .getUnshuffledSplit(uids, 0.1f, uids.size(), id);
+          .getUnshuffledSplit(uids, 0.1f, uids.size(), id, true);
 
       expected.add(DataStoreManager.getInstance()
           .getShortestStrongestResponse(AppConstants.LABEL_USER,
               String.valueOf(id), TRUST_DECAY_TYPE.LOG_TRUST_DECAY,
               distribution)
           .getResult());
-      ScoreUtils.processFeedback(AppConstants.LABEL_USER, actual.get(i),
-          expected.get(i), actual.get(i) == expected.get(i), distribution);
+      ScoreUtils.processFeedback(AppConstants.LABEL_USER, expected.get(i),
+          actual.get(i) == expected.get(i), distribution);
     }
 
     System.out.println("feedback" + ScoreUtils.getRMSE(expected, actual));
@@ -218,7 +221,7 @@ public class TestDijkstraSmallSimple {
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-          .getShuffled(uids, 0.75f, id);
+          .getShuffled(uids, 0.75f, id, true);
 
       expected.add(DataStoreManager.getInstance()
           .getShortestStrongestResponse(AppConstants.LABEL_USER,
@@ -240,7 +243,7 @@ public class TestDijkstraSmallSimple {
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-          .getShuffled(uids, 0.5f, id);
+          .getShuffled(uids, 0.5f, id, true);
 
       expected.add(DataStoreManager.getInstance()
           .getShortestStrongestResponse(AppConstants.LABEL_USER,
@@ -262,7 +265,7 @@ public class TestDijkstraSmallSimple {
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-          .getShuffled(uids, 0.25f, id);
+          .getShuffled(uids, 0.25f, id, true);
 
       expected.add(DataStoreManager.getInstance()
           .getShortestStrongestResponse(AppConstants.LABEL_USER,
@@ -283,7 +286,7 @@ public class TestDijkstraSmallSimple {
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-          .getShuffled(uids, 0.1f, id);
+          .getShuffled(uids, 0.1f, id, true);
 
       expected.add(DataStoreManager.getInstance()
           .getShortestStrongestResponse(AppConstants.LABEL_USER,

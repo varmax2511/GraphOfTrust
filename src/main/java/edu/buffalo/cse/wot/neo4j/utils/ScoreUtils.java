@@ -85,32 +85,17 @@ public class ScoreUtils {
    * will penalize all incoming edges of these nodes.
    * </pre>
    */
-  public static void processFeedback(String labelName, boolean actualAnswer,
-      boolean expectedAnswer, boolean feedback,
-      Pair<Set<Long>, Set<Long>> distribution) {
-    // invalid feedback
-    if (actualAnswer == expectedAnswer) {
-      if (feedback == false) {
-        return;
-      }
-    } else {
-      if (feedback) {
-        return;
-      }
-    }
-
-    // process the list of all node UID's which participated
-    // reward all those gave correct answer and penalize all thos who gave
-    // incorrect answer
-    if (actualAnswer) {
-      DataStoreManager.assignFeedback(labelName, true,
+  public static void processFeedback(String labelName, boolean answer,
+      boolean feedback, Pair<Set<Long>, Set<Long>> distribution) {
+    if (answer) {
+      DataStoreManager.assignFeedback(labelName, feedback,
           distribution.getKey());
-      DataStoreManager.assignFeedback(labelName, false,
+      DataStoreManager.assignFeedback(labelName, !feedback,
           distribution.getValue());
-    }else {
-      DataStoreManager.assignFeedback(labelName, false,
+    } else {
+      DataStoreManager.assignFeedback(labelName, !feedback,
           distribution.getKey());
-      DataStoreManager.assignFeedback(labelName, true,
+      DataStoreManager.assignFeedback(labelName, feedback,
           distribution.getValue());
     }
   }

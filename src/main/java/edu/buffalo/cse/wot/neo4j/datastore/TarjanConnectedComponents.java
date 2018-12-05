@@ -175,25 +175,31 @@ public class TarjanConnectedComponents {
       }
       final float trust = shortesPaths.containsKey(entry.getKey())
           ? shortesPaths.get(entry.getKey())
-          : 0.2f;
+          : 0.3f;
       if (entry.getValue() > 0) {
-        yayTrust += trust * entry.getValue();
+        yayTrust += trust / Math.sqrt(entry.getValue());
         yayCnt++;
       } else {
-        nayTrust += trust * -1 * entry.getValue();
+        nayTrust += trust / (Math.sqrt(-1 * entry.getValue()));
         nayCnt++;
       }
     } // for
 
+    
+    double yes = (yayTrust * yayCnt) / ((yayTrust * yayCnt) + (nayTrust * nayCnt));
+    double no = (nayTrust * nayCnt) / ((yayTrust * yayCnt) + (nayTrust * nayCnt));
+    
     final TrustOutput trustOutput = new TrustOutput();
-    trustOutput.setResult(yayCnt == 0 ? false : nayCnt == 0 ? true :
-        (yayTrust / yayCnt) < (nayTrust / nayCnt));
+    trustOutput.setResult(yes > no ? true : false);
     
     trustOutput.setConfidence(
-        trustOutput.getResult() ? (yayTrust / yayCnt) : (nayTrust / nayCnt));
+        trustOutput.getResult() ? yes : no);
     trustOutput
         .setHeuristic(AppConstants.STRONGLY_CONNECTED_COMPONENTS_HEURISTIC);
     trustOutput.setTrustDecayType(trustDecayType.toString());
+    trustOutput.setYesIds(yayNnay.getKey());
+    trustOutput.setNoIds(yayNnay.getValue());
+    
     return trustOutput;
   }
 
