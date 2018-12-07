@@ -54,7 +54,7 @@ public class ApiController {
     graphs.add(GRAPH_TYPE.SMALL_SIMPLE.toString());
     graphs.add(GRAPH_TYPE.SMALL_BRIDGE.toString());
     graphs.add(GRAPH_TYPE.SMALL_DENSE.toString());
-    graphs.add(GRAPH_TYPE.ADVOGATO.toString());
+    graphs.add(GRAPH_TYPE.ADVOGATO_MEDIUM.toString());
     return graphs;
   }
 

@@ -1,5 +1,6 @@
 package edu.buffalo.cse.wot.neo4j.datastore;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,7 +34,7 @@ import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 public class DijkstraAlgorithm {
 
   private static Logger logger = LogManager.getLogger(DijkstraAlgorithm.class);
-
+  static DecimalFormat df = new DecimalFormat("#.###");
   /**
    *
    * @param labelName
@@ -272,7 +273,7 @@ public class DijkstraAlgorithm {
 
     final TrustOutput trustOutput = new TrustOutput();
     trustOutput.setResult(minResponse);
-    trustOutput.setConfidence(1 / min);
+    trustOutput.setConfidence(Double.parseDouble(df.format(1 / min)));
     trustOutput.setHeuristic(AppConstants.SHORTEST_STRONGEST_PATH_HEURISTIC);
     trustOutput.setTrustDecayType(trustDecayType.toString());
     trustOutput.setYesIds(yayNnay.getKey());

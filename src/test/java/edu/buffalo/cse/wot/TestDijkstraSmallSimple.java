@@ -18,6 +18,7 @@ import edu.buffalo.cse.wot.neo4j.JettyServer;
 import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
 import edu.buffalo.cse.wot.neo4j.datastore.DataStoreManager;
+import edu.buffalo.cse.wot.neo4j.datastore.TrustOutput;
 import edu.buffalo.cse.wot.neo4j.utils.DataUtils;
 import edu.buffalo.cse.wot.neo4j.utils.QaRandomDistributor;
 import edu.buffalo.cse.wot.neo4j.utils.ScoreUtils;
@@ -217,7 +218,8 @@ public class TestDijkstraSmallSimple {
     final List<Boolean> expected = new ArrayList<>();
     final List<Boolean> actual = new ArrayList<>();
 
-    final long id = 1;
+    final long id = 3;
+    List<TrustOutput> trustOutputs = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
@@ -238,7 +240,7 @@ public class TestDijkstraSmallSimple {
 
     final List<Boolean> expected = new ArrayList<>();
     final List<Boolean> actual = new ArrayList<>();
-    final long id = 1;
+    final long id = 3;
 
     for (int i = 0; i < 10; i++) {
       actual.add(true);
@@ -260,7 +262,7 @@ public class TestDijkstraSmallSimple {
 
     final List<Boolean> expected = new ArrayList<>();
     final List<Boolean> actual = new ArrayList<>();
-    final long id = 1;
+    final long id = 3;
 
     for (int i = 0; i < 10; i++) {
       actual.add(true);
@@ -282,7 +284,7 @@ public class TestDijkstraSmallSimple {
 
     final List<Boolean> expected = new ArrayList<>();
     final List<Boolean> actual = new ArrayList<>();
-    final long id = 1;
+    final long id = 3;
     for (int i = 0; i < 10; i++) {
       actual.add(true);
       final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor

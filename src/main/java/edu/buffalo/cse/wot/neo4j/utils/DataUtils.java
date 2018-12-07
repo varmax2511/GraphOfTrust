@@ -58,6 +58,13 @@ public class DataUtils {
         // TODO Auto-generated method stub
         return "ADVOGATO";
       }
+    },
+    ADVOGATO_MEDIUM {
+      @Override
+      public String toString() {
+        // TODO Auto-generated method stub
+        return "ADVOGATO_MEDIUM";
+      }
     }
 
   }
@@ -77,11 +84,114 @@ public class DataUtils {
       return loadSmallDenseGraph(dsm);
     } else if (GRAPH_TYPE.SMALL_BRIDGE.toString().equalsIgnoreCase(graphType)) {
       return loadSmallBridgeGraph(dsm);
+    }else if (GRAPH_TYPE.ADVOGATO_MEDIUM.toString().equalsIgnoreCase(graphType)) {
+      return loadAdvogatoMediumGraph(dsm);
     }
     return loadSmallGraph(dsm);
   }
 
   private static Logger logger = LogManager.getLogger(DataUtils.class);
+
+  public static Pair<List<Long>, JsonNode> loadAdvogatoMediumGraph(
+      DataStoreManager dsm) throws IOException {
+    // validate
+    if (dsm == null) {
+      return null;
+    }
+
+    final Map<Long, UserNode> id2UserNodes = new HashMap<>();
+    BufferedReader userNameReader = null;
+    BufferedReader edgeReader = null;
+    File userfile = null;
+    File edgeFile = null;
+
+    try {
+      /*
+       * Read user names
+       */
+      userfile = new File(
+          "C:\\Users\\rathj\\git\\GraphOfTrust\\src\\main\\resources\\advogato\\adogato.medium.name");
+      userNameReader = new BufferedReader(new FileReader(userfile));
+      String name = StringUtils.EMPTY;
+      long cnt = 0l;
+      // read and create node
+      while ((name = userNameReader.readLine()) != null) {
+        final UserNode node = new UserNode();
+        node.setProperty("uid", String.valueOf(++cnt));
+        node.setProperty("name", name);
+        id2UserNodes.put(cnt, node);
+
+      } // while
+
+      /*
+       * Read relationships
+       */
+      edgeFile = new File(
+          "C:\\Users\\rathj\\git\\GraphOfTrust\\src\\main\\resources\\advogato\\out.medium.advogato");
+      edgeReader = new BufferedReader(new FileReader(edgeFile));
+      String edge = "";
+
+      // iterate relationships
+      while ((edge = edgeReader.readLine()) != null) {
+        final String[] arr = edge.split(" ");
+        // skip
+        if (arr == null || arr.length != 3) {
+          continue;
+        }
+
+        final long src = Long.parseLong(arr[0]);
+        final long end = Long.parseLong(arr[1]);
+
+        // no self loops
+        if (src == end) {
+          continue;
+        }
+
+        final float weight = 1 - Float.parseFloat(arr[2]);
+
+        final UserNode startNode = id2UserNodes.get(src);
+        final UserNode endNode = id2UserNodes.get(end);
+
+        // if unable to find source or destination nodes
+        if (startNode == null || endNode == null) {
+          logger.warn(
+              "No matching node found for relationship source: {} -> end: {}",
+              src, end);
+          continue;
+        }
+
+        startNode.addEdge(
+            new Edge(id2UserNodes.get(src), id2UserNodes.get(end), weight));
+
+        id2UserNodes.put(src, startNode);
+      } // while
+
+      // iterate the map and add to db
+      for (final Map.Entry<Long, UserNode> entry : id2UserNodes.entrySet()) {
+        dsm.addNode(entry.getValue());
+      } // for
+
+      return new Pair<>(new ArrayList<Long>(id2UserNodes.keySet()),
+          JsonNodeUtils
+              .getJsonGraph(new ArrayList<GraphNode>(id2UserNodes.values())));
+    } finally {
+
+      /*
+       * cleanup
+       */
+      if (userNameReader != null) {
+        userNameReader.close();
+      }
+
+      if (edgeReader != null) {
+        edgeReader.close();
+      }
+
+      userfile = null;
+      edgeFile = null;
+    }
+
+  }
 
   /**
    * Load the Advogato dataset in Datastore
@@ -116,7 +226,7 @@ public class DataUtils {
       // read and create node
       while ((name = userNameReader.readLine()) != null) {
         final UserNode node = new UserNode();
-        node.setProperty("uid", ++cnt);
+        node.setProperty("uid", String.valueOf(++cnt));
         node.setProperty("name", name);
         id2UserNodes.put(++cnt, node);
 

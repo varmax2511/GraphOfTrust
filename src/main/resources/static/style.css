@@ -12,7 +12,12 @@
     width: 100%;
 }
 
-th, td {
+th{
+	text-align: center;
+    padding: 8px;
+    border-bottom: 2px black;
+} 
+td {
     text-align: center;
     padding: 8px;
 }

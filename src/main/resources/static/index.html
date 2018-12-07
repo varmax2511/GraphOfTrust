@@ -31,24 +31,27 @@
 			malicious user(s).</p>
 	</div>
 	<div>
-		<select id="graphs" onchange="configureGraph()">
-			<option value="none">No Selection</option>
-		</select>
-		<script type="text/javascript">
-			getAvailableGraphs();
-		</script>
+		<center>
+			<select id="graphs" onchange="configureGraph()">
+				<option value="none">No Selection</option>
+			</select>
+			<script type="text/javascript">
+				getAvailableGraphs();
+			</script>
+		</center>
 	</div>
 
-	<svg id="d3graph" width="960" height="220">
+    <center>
+	<svg id="d3graph" width="960" height="320">
 	</svg>
-
-	<div id="qdisplay" style="display: none;">
+    </center>
+	<div id="qdisplay" style="display: none; margin-left: 5%; margin-right: 5%;">
 		<h3>Ask a Question</h3>
 		<hr>
 		<select id="questions"></select>
 	</div>
 
-	<div id="config" style="display: none;">
+	<div id="config" style="display: none; margin-left: 5%; margin-right: 5%;">
 		<h3>Configure</h3>
 		<hr>
 		<table>
@@ -82,7 +85,7 @@
 
 
 
-	<table id="gable" style="display: none;">
+	<table id="gable" style="display: none; margin-left: 5%; margin-right: 5%;">
 		<tr>
 			<th>Proposed</th>
 			<th>Confidence</th>

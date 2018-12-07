@@ -1,5 +1,6 @@
 package edu.buffalo.cse.wot.neo4j.datastore;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 public class TarjanConnectedComponents {
 
   static int time;
+  static DecimalFormat df = new DecimalFormat("#.###");
   /**
    *
    * @param numVertices
@@ -185,21 +187,23 @@ public class TarjanConnectedComponents {
       }
     } // for
 
-    
-    double yes = (yayTrust * yayCnt) / ((yayTrust * yayCnt) + (nayTrust * nayCnt));
-    double no = (nayTrust * nayCnt) / ((yayTrust * yayCnt) + (nayTrust * nayCnt));
-    
+    double yes = (yayTrust * yayCnt)
+        / ((yayTrust * yayCnt) + (nayTrust * nayCnt));
+    double no = (nayTrust * nayCnt)
+        / ((yayTrust * yayCnt) + (nayTrust * nayCnt));
+
     final TrustOutput trustOutput = new TrustOutput();
     trustOutput.setResult(yes > no ? true : false);
-    
-    trustOutput.setConfidence(
-        trustOutput.getResult() ? yes : no);
+
+    trustOutput.setConfidence(trustOutput.getResult()
+        ? Double.parseDouble(df.format(yes))
+        : Double.parseDouble(df.format(no)));
     trustOutput
         .setHeuristic(AppConstants.STRONGLY_CONNECTED_COMPONENTS_HEURISTIC);
     trustOutput.setTrustDecayType(trustDecayType.toString());
     trustOutput.setYesIds(yayNnay.getKey());
     trustOutput.setNoIds(yayNnay.getValue());
-    
+
     return trustOutput;
   }
 

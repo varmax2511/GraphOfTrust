@@ -115,9 +115,9 @@ function loadTrustOutput(){
             '<td>' + object.answer + '</td>' +
             '<td>' + object.yesIds.toString() + '</td>' +
             '<td>' + object.noIds.toString() + '</td>' + 
-            '<td>' + '<input type="button" value = "Accept" class="feebutton" />' +
+            '<td>' + '<input type="button" value = "Accept" id="feebutton" />' +
             '&nbsp;' +
-            '<input type="button" value="Reject" class="feebutton" />' +
+            '<input type="button" value="Reject" id="feebutton" />' +
             '</td>';
             table.appendChild(tr);
         });
