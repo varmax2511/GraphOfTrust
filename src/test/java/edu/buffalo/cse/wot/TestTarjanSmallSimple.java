@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import edu.buffalo.cse.wot.neo4j.JettyServer;
 import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
@@ -34,7 +36,8 @@ public class TestTarjanSmallSimple {
     dsm = DataStoreManager.getInstance();
 
     // load simple graph
-    uids = DataUtils.loadSmallGraph(dsm);
+    Pair<List<Long>, JsonNode> pair = DataUtils.loadSmallDenseGraph(dsm);
+    uids = pair.getKey();
   }
 
   @org.junit.Test
@@ -42,7 +45,7 @@ public class TestTarjanSmallSimple {
 
     final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.75f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.75f, uids.size(), id, true);
 
     assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
@@ -54,7 +57,7 @@ public class TestTarjanSmallSimple {
 
     final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.5f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.5f, uids.size(), id, true);
 
     assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
@@ -66,7 +69,7 @@ public class TestTarjanSmallSimple {
 
     final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.25f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.25f, uids.size(), id, true);
 
     assertTrue(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),
@@ -78,7 +81,7 @@ public class TestTarjanSmallSimple {
 
     final long id = 1;
     final Pair<Set<Long>, Set<Long>> distribution = QaRandomDistributor
-        .getUnshuffledSplit(uids, 0.1f, uids.size(), id);
+        .getUnshuffledSplit(uids, 0.1f, uids.size(), id, true);
 
     assertFalse(DataStoreManager.getInstance().getResponseFrmSCC(
         AppConstants.LABEL_USER, String.valueOf(id), uids.size(),

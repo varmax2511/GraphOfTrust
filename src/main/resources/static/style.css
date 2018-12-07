@@ -6,14 +6,60 @@
 	text-align: center;
 	overflow: visible;
 }
-table {
+.table {
     border-collapse: collapse;
+    border-bottom: black;
     width: 100%;
 }
 
-th, td {
-    text-align: left;
+th{
+	text-align: center;
+    padding: 8px;
+    border-bottom: 2px black;
+} 
+td {
+    text-align: center;
     padding: 8px;
 }
 
 tr:nth-child(even){background-color: #f2f2f2}
+
+links line {
+	stroke: #999;
+	stroke-opacity: 0.6;
+}
+
+.nodes circle {
+	stroke: #fff;
+	stroke-width: 1.5px;
+}
+
+text {
+	font-family: sans-serif;
+	font-size: 10px;
+}
+
+#likeButton{
+	border: none;
+    color: white;
+    padding: 12px 16px;
+    font-size: 16px;
+    cursor: pointer; 
+}
+#downButton{
+	border: none;
+    color: white;
+    padding: 12px 16px;
+    font-size: 16px;
+    cursor: pointer; 
+}
+#feebutton {
+     background:none!important;
+     color:inherit;
+     border:none; 
+     padding:0!important;
+     font: inherit;
+     /*border is optional*/
+     border-bottom:1px solid #444; 
+     cursor: pointer;
+}

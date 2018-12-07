@@ -1,61 +1,20 @@
 package edu.buffalo.cse.wot.neo4j.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+public class Question {
 
-import org.apache.commons.lang3.Validate;
-
-/**
- * 
- * @author varunjai
- *
- */
-public class Question implements GraphNode {
-
-  private final Map<String, Object> properties = new HashMap<>();
-  private final List<Edge> edges = new ArrayList<>();
-  /**
-   * 
-   * @param key
-   * @return
-   */
-  public Object getPropertyByKey(String key) {
-    Validate.notBlank(key);
-    return properties.get(key);
+  private String question;
+  private boolean answer;
+  public String getQuestion() {
+    return question;
   }
-  /**
-   * 
-   * @param key
-   * @param value
-   * @return
-   */
-  public void setProperty(String key, Object value) {
-    Validate.notBlank(key);
-    if (value == null) {
-      return;
-    }
-    properties.put(key, value);
+  public void setQuestion(String question) {
+    this.question = question;
   }
-
-  public Map<String, Object> getAllProperties() {
-    return properties;
+  public boolean isAnswer() {
+    return answer;
   }
-
-  public List<Edge> getEdges() {
-    return this.edges;
+  public void setAnswer(boolean answer) {
+    this.answer = answer;
   }
-
-  /**
-   * 
-   * @param edge
-   */
-  public void addEdge(Edge edge) {
-    if (edge == null) {
-      return;
-    }
-    edges.add(edge);
-  }
-
+  
 }

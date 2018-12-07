@@ -24,7 +24,7 @@ public class TrustDecayUtils {
       @Override
       public String toString() {
         // TODO Auto-generated method stub
-        return "Probabilistic Trust Decay";
+        return "Normalized Trust Decay";
       }
     }
   }

@@ -1,0 +1,4 @@
+Is water blue?|TRUE
+Is earth round?|FALSE
+Do whales live in water?|TRUE
+Does Sun revolve around the Earth?|FALSE

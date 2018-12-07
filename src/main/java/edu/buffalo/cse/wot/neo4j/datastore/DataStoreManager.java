@@ -15,6 +15,7 @@ import org.neo4j.graphdb.Transaction;
 import edu.buffalo.cse.wot.neo4j.DataStore;
 import edu.buffalo.cse.wot.neo4j.Pair;
 import edu.buffalo.cse.wot.neo4j.config.AppConstants;
+import edu.buffalo.cse.wot.neo4j.model.GraphNode;
 import edu.buffalo.cse.wot.neo4j.model.UserNode;
 import edu.buffalo.cse.wot.neo4j.utils.TrustDecayUtils.TRUST_DECAY_TYPE;
 
@@ -59,7 +60,7 @@ public class DataStoreManager {
    * 
    * @param node
    */
-  public void addNode(UserNode node) {
+  public void addNode(GraphNode node) {
     dataStore.save(node);
   }
 
