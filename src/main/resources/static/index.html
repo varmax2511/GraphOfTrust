@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Web of Trust</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<script type="text/javascript"
+	src="https://www.draw.io/js/viewer.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="http://d3js.org/d3-selection-multi.v1.js"></script>
+<script type="text/javascript" src="app.js"></script>
+<script type="text/javascript" src="graph1.js"></script>
+
+</head>
+<body>
+	<div id="band">
+		<font color="white" size="10">Web of Trust in a Social Graph</font>
+	</div>
+	<div>
+		<p>This is a proof of concept to illustrate the relevance of trust
+			among users in a Social graph. This application employs the use case
+			of a Question and Answer application as a test bed for our algorithms
+			to show how web of trust can help us in reaching a possible answer to
+			questions based on user responses both within and outside a person's
+			network.</p>
+		<p>The application can also be used to see different
+			pre-configured scenarios on how our algorithm can handle the cases of
+			malicious user(s).</p>
+	</div>
+	<div>
+		<center>
+			<select id="graphs" onchange="configureGraph()">
+				<option value="none">No Selection</option>
+			</select>
+			<script type="text/javascript">
+				getAvailableGraphs();
+			</script>
+		</center>
+	</div>
+
+    <center>
+	<svg id="d3graph" width="960" height="320">
+	</svg>
+    </center>
+	<div id="qdisplay" style="display: none; margin-left: 5%; margin-right: 5%;">
+		<h3>Ask a Question</h3>
+		<hr>
+		<select id="questions"></select>
+	</div>
+
+	<div id="config" style="display: none; margin-left: 5%; margin-right: 5%;">
+		<h3>Configure</h3>
+		<hr>
+		<table>
+			<tr>
+				<td><div>
+						<label>UserId:</label> <input id="userid" type="text"></input>
+					</div></td>
+				<td>
+					<div>
+						<select id="modeSelect" onchange="showOpt()" style="float: left;">
+							<option value="ratio">Ratio</option>
+							<option value="fixed">Fixed</option>
+						</select> &nbsp;
+						<div id="fraction" style="float: left;">
+							<label>Yes/No ratio:</label> <input id="ratio" type="text"></input>
+							<label>Random assignment:</label> <input id="shuffled"
+								type="checkbox" value="True" /> <label>Participants:</label> <input
+								id="size" type="text"></input>
+						</div>
+						<div id="list" style="display: none; float: left;">
+							<label>Yes Ids</label> <input id="yesids" type="text"></input> <label>No
+								Ids</label> <input id="noids" type="text"></input>
+						</div>
+					</div>
+				</td>
+				<td><input type="button" value="Go" onclick="loadTrustOutput()" /></td>
+			</tr>
+		</table>
+	</div>
+
+
+
+
+	<table id="gable" style="display: none; margin-left: 5%; margin-right: 5%;">
+		<tr>
+			<th>Proposed</th>
+			<th>Confidence</th>
+			<th>Heuristic</th>
+			<th>Trust Decay</th>
+			<th>Actual Answer</th>
+			<th>Yes Nodes</th>
+			<th>No Nodes</th>
+			<th>Feedback</th>
+		</tr>
+	</table>
+
+</body>
+</html>

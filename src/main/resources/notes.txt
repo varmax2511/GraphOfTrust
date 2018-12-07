@@ -1,0 +1,22 @@
+TODO:
+- Implement logic to load data - graph and Q&A
+- Implement heuristic algorithm
+- implement probabilistic trust decay
+- implement test methodology to 
+      - implement deterministic Yes / No assignment
+      - implement validation
+- implement user interface      
+- implement feedback mechanism to update the edge weights at runtime
+
+We can create another heuristic where we can find all the connected components in
+the graph and compute score of each component. Then an aggregate of all components
+will result in the final answer.
+This is because response in each connected component will be influenced by members 
+of that component and treating each connected component as a single unit will help.
+
+
+
+- create configurations imitating malicious users
+- normalize confidence score between 0 to 1
+- create UX
+- how to process feedback using REST api
