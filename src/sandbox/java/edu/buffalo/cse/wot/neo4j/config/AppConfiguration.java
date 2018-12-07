@@ -23,7 +23,7 @@ public class AppConfiguration {
     properties = new Properties();
     try {
       properties.load(new FileInputStream(
-          "src/sandbox/java/config.properties"));
+          "C:\\Users\\rathj\\git\\GraphOfTrust\\src\\sandbox\\java\\config.properties"));
     } catch (Throwable t) {
       logger.error(t.getMessage());
       throw new IllegalArgumentException(
