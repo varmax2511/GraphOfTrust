@@ -110,7 +110,7 @@ public class DataUtils {
        * Read user names
        */
       userfile = new File(
-          "C:\\Users\\rathj\\git\\GraphOfTrust\\src\\main\\resources\\advogato\\adogato.medium.name");
+          "src/main/resources/advogato/adogato.medium.name");
       userNameReader = new BufferedReader(new FileReader(userfile));
       String name = StringUtils.EMPTY;
       long cnt = 0l;
@@ -127,7 +127,7 @@ public class DataUtils {
        * Read relationships
        */
       edgeFile = new File(
-          "C:\\Users\\rathj\\git\\GraphOfTrust\\src\\main\\resources\\advogato\\out.medium.advogato");
+          "src/main/resources/advogato/out.medium.advogato");
       edgeReader = new BufferedReader(new FileReader(edgeFile));
       String edge = "";
 
@@ -236,7 +236,7 @@ public class DataUtils {
        * Read relationships
        */
       edgeFile = new File(
-          "C:\\Users\\rathj\\git\\GraphOfTrust\\src\\main\\resources\\advogato\\out.advogato");
+          "src/main/resources/advogato/out.advogato");
       edgeReader = new BufferedReader(new FileReader(edgeFile));
       String edge = "";
 
@@ -585,7 +585,7 @@ public class DataUtils {
 
     try {
       qaFile = new File(
-          "C:\\Users\\rathj\\git\\GraphOfTrust\\src\\main\\resources\\QA.txt");
+          "src/main/resources/QA.txt");
 
       reader = new BufferedReader(new FileReader(qaFile));
       String text = StringUtils.EMPTY;
