@@ -106,7 +106,12 @@ function loadTrustOutput(){
 		}
 		
 		var table = document.getElementById('gable');
+		var cnt = 0;
+		
 		data.forEach(function(object) {
+			var aEleId = 'acc' + cnt;
+			var rEleId = 'rej' + cnt;
+			cnt = cnt + 1;
             var tr = document.createElement('tr');
             tr.innerHTML = '<td>' + object.result + '</td>' +
             '<td>' + object.confidence + '</td>' +
@@ -115,12 +120,23 @@ function loadTrustOutput(){
             '<td>' + object.answer + '</td>' +
             '<td>' + object.yesIds.toString() + '</td>' +
             '<td>' + object.noIds.toString() + '</td>' + 
-            '<td>' + '<input type="button" value = "Accept" id="feebutton" />' +
+            '<td>' + '<input type="button" value = "Accept" id="' + aEleId + '"/>' +
             '&nbsp;' +
-            '<input type="button" value="Reject" id="feebutton" />' +
+            '<input type="button" value="Reject" id="' + rEleId + '"/>' +
             '</td>';
             table.appendChild(tr);
+            console.log("ele id" + aEleId);
+            console.log("ele id" + rEleId);
+            
+            document.getElementById(aEleId).onclick = function(){
+				submitFeedback(true, object.answer);
+			}
+            
+            document.getElementById(rEleId).onclick = function(){
+				submitFeedback(false, object.answer);
+			}
         });
+		
 	});
 	
 }
@@ -283,8 +299,8 @@ function loadD3Graph(graphJson){
 
 function submitFeedback(feedback, answer){
 	console.log("efqef");
-	// $.get("http://localhost:8080/graph/feedback/" + feedback + "?answer=" +
-	// answer)
+	 $.get("http://localhost:8080/graph/feedback/" + feedback + "?answer=" +
+	 answer)
 }
 
 function showOpt(){
